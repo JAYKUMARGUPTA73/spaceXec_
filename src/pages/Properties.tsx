@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 
 // Comprehensive Property Type Definition
 type Property = {
+  propertyId:string,
   _id: string;
   name: string;
   title: string;

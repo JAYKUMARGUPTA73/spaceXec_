@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Share2, MapPin } from "lucide-react";
 import {
   Home,
   User,
@@ -24,7 +25,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
 import PropertyCard from "@/components/ui/PropertyCard";
+
+import { Copy, CheckCircle } from "lucide-react";
+
 import {
   PieChart,
   Pie,
@@ -37,6 +42,12 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { Link } from "react-router-dom";
+import { FaMap, FaMapPin } from "react-icons/fa";
+
+
+
+
 const data_ = [
   { name: "Category A", value: 40 },
   { name: "Category B", value: 30 },
@@ -66,7 +77,7 @@ const user_d = {
     {
       id: "1", //
       title: "Luxury Apartment in South Delhi", //
-      location: "Green Park, Delhi",//
+      location: "Green Park, Delhi", //
       price: 15000000, //
       yield: 14.5, //
       minInvestment: 25000, //
@@ -75,9 +86,9 @@ const user_d = {
       type: "Residential", //
       area: 1250, //
       investedAmount: 100000, //
-      ownership: 0.67,//
+      ownership: 0.67, //
       returns: 145000, //
-      purchaseDate: "March 15, 2022",//
+      purchaseDate: "March 15, 2022", //
     },
     {
       id: "2",
@@ -110,6 +121,7 @@ const user_d = {
       ownership: 0.2,
       returns: 3300,
       purchaseDate: "October 10, 2022",
+      nftToken:"iofuo8940923"
     },
   ],
   // New wishlist properties
@@ -126,6 +138,7 @@ const user_d = {
       type: "Vacation",
       area: 2200,
       fundingPercentage: 78,
+
     },
     {
       id: "w2",
@@ -174,6 +187,9 @@ const user_d = {
       amount: 100000,
       type: "investment",
       property: "Luxury Apartment in South Delhi",
+      transaction_id:"lvjndsuf98qrrw0709",
+      propertyId:"akdfj983232",
+      Date:"sdfsd",
     },
     {
       id: "t2",
@@ -257,16 +273,27 @@ const user_d = {
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [wishlistView, setWishlistView] = useState("grid"); // 'grid' or 'tile'
-  const [userId,setuserId]=useState("");
+  const [userId, setuserId] = useState("");
+  const [profile, setProfile] = useState("");
   const [dashboardData, setDashboardData] = useState(null);
   const [error, setError] = useState(null);
-  const [userData,setUserData]=useState(user_d)
-  const [data,setData]=useState(data_);
-  const [data1,setData1]=useState(data1_);
+  const [userData, setUserData] = useState(user_d);
+  const [data, setData] = useState(data_);
+  const [data1, setData1] = useState(data1_);
+  const [copiedToken, setCopiedToken] = useState(null);
+
+  const copyToken = (tokenId) => {
+    navigator.clipboard.writeText(tokenId);
+    setCopiedToken(tokenId);
+    setTimeout(() => setCopiedToken(null), 2000); // Reset copied state after 2s
+  };
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
+        const pro_ = localStorage.getItem("profile_pic");
+        setProfile(pro_);
+
         const id = localStorage.getItem("_id");
         if (!id) {
           throw new Error("User ID not found in localStorage");
@@ -284,11 +311,10 @@ const Dashboard = () => {
         }
 
         const data = await response.json();
-        setUserData(data.data.userData)
-        setData(data.data.charts.pieChartData
-        )
-        setData1(data.data.charts.monthlyTrackData)
-        console.log(data.data)
+        setUserData(data.data.userData);
+        setData(data.data.charts.pieChartData);
+        setData1(data.data.charts.monthlyTrackData);
+        console.log(data.data);
         setDashboardData(data);
       } catch (err) {
         setError(err.message);
@@ -298,7 +324,7 @@ const Dashboard = () => {
 
     fetchDashboardData();
   }, []);
-  
+
   // Function to toggle between grid and tile view
   const toggleWishlistView = () => {
     setWishlistView(wishlistView === "grid" ? "tile" : "grid");
@@ -314,7 +340,12 @@ const Dashboard = () => {
               <div className="p-4 border-b border-gray-100">
                 <div className="flex items-center space-x-3">
                   <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
-                    <User className="h-6 w-6 text-primary" />
+                    {/* <User className="h-6 w-6 text-primary" /> */}
+                    <img
+                      src={profile}
+                      alt="Profile"
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
                   </div>
                   <div>
                     <h2 className="font-medium text-gray-900">
@@ -466,9 +497,9 @@ const Dashboard = () => {
                   </Card>
                   <Card>
                     <CardHeader className="pb-2">
-                      <CardDescription >Total Returns</CardDescription>
+                      <CardDescription>Total Returns</CardDescription>
                       <CardTitle className="text-2xl text-green-700">
-                         +₹{userData.totalReturns.toLocaleString()}
+                        +₹{userData.totalReturns.toLocaleString()}
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -536,33 +567,33 @@ const Dashboard = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="h-64 flex items-center justify-center">
-                      <ResponsiveContainer>
-                        <PieChart width={300} height={250}>
-                          <Pie
-                            data={data}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={30}
-                            outerRadius={50}
-                            fill="#8884d8"
-                            paddingAngle={1}
-                            dataKey="value"
-                            label={({ name, percent }) =>
-                              `${(percent * 100).toFixed(0)}%`
-                            } // Show name & percentage
-                          >
-                            {data.map((_, index) => (
-                              <Cell
-                                key={`cell-${index}`}
-                                fill={COLORS[index % COLORS.length]}
-                              />
-                            ))}
-                          </Pie>
-                          
-                          {/* <Tooltip /> */}
+                        <ResponsiveContainer>
+                          <PieChart width={300} height={250}>
+                            <Pie
+                              data={data}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={30}
+                              outerRadius={50}
+                              fill="#8884d8"
+                              paddingAngle={1}
+                              dataKey="value"
+                              label={({ name, percent }) =>
+                                `${(percent * 100).toFixed(0)}%`
+                              } // Show name & percentage
+                            >
+                              {data.map((_, index) => (
+                                <Cell
+                                  key={`cell-${index}`}
+                                  fill={COLORS[index % COLORS.length]}
+                                />
+                              ))}
+                            </Pie>
 
-                          <Legend className="mt-20" />
-                        </PieChart>
+                            {/* <Tooltip /> */}
+
+                            <Legend className="mt-20" />
+                          </PieChart>
                         </ResponsiveContainer>
                       </div>
                     </CardContent>
@@ -694,53 +725,75 @@ const Dashboard = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {userData.transactions.slice(0, 5).map((transaction) => (
-                        <div
-                          key={transaction.id}
-                          className="flex items-center justify-between border-b border-gray-100 pb-2"
-                        >
-                          <div className="flex items-start space-x-3">
+                      {userData.transactions
+                        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                        // Sort by latest transaction
+                        .slice(0, 50) // Get the first 50 transactions after sorting
+                        .map((transaction) => {
+                          const property = transaction.propertyId; 
+                          // Assuming propertyId is populated with the property data
+
+                          return (
                             <div
-                              className={`mt-1 h-8 w-8 rounded-full flex items-center justify-center ${
-                                transaction.type === "investment"
-                                  ? "bg-blue-100"
-                                  : "bg-green-100"
-                              }`}
+                              key={transaction.transaction_id} // Using transaction_id as the key
+                              className="flex items-center justify-between border-b border-gray-100 pb-2"
                             >
-                              {transaction.type === "investment" ? (
-                                <TrendingUp
-                                  className={`h-4 w-4 text-blue-600`}
-                                />
-                              ) : (
-                                <DollarSign
-                                  className={`h-4 w-4 text-green-600`}
-                                />
-                              )}
-                            </div>
-                            <div>
-                              <p className="font-medium text-gray-900">
-                                {transaction.type === "investment"
-                                  ? "Invested in"
-                                  : "Return from"}{" "}
-                                {transaction.property}
+                              <div className="flex items-start space-x-3">
+                                <div
+                                  className={`mt-1 h-8 w-8 rounded-full flex items-center justify-center ${
+                                    transaction.type === "investment"
+                                      ? "bg-blue-100"
+                                      : "bg-green-100"
+                                  }`}
+                                >
+                                  {transaction.type === "investment" ? (
+                                    <TrendingUp className="h-4 w-4 text-blue-600" />
+                                  ) : (
+                                    <DollarSign className="h-4 w-4 text-green-600" />
+                                  )}
+                                </div>
+                                <div>
+                                  <p
+                                    className={`font-medium ${
+                                      transaction.type === "investment"
+                                        ? "text-green-600"
+                                        : "text-gray-900"
+                                    }`}
+                                  >
+                                    {transaction.type === "investment"
+                                      ? "Invested in"
+                                      : "Return from"}{" "}
+                                    {/* Display title if available */}
+                                  </p>
+
+                                  <p className="text-xs text-gray-500">
+                                    <p>
+                                      TransactionId:{" "}
+                                      {transaction.transaction_id
+                                        ? transaction.transaction_id
+                                        : "Property not found"}{" "}
+                                    </p>
+                                    {new Date(
+                                      transaction.date
+                                    ).toLocaleDateString()}{" "}
+                                    {/* Format the date */}
+                                  </p>
+                                </div>
+                              </div>
+                              <p
+                                className={`font-medium ${
+                                  transaction.type === "investment"
+                                    ? "text-gray-600"
+                                    : "text-gray-900"
+                                }`}
+                              >
+                                {transaction.type === "investment" ? "-" : "+"}{" "}
+                                ₹{transaction.amount.toLocaleString()}{" "}
+                                {/* Display title if available */}
                               </p>
-                              <p className="text-xs text-gray-500">
-                                {transaction.date}
-                              </p>
                             </div>
-                          </div>
-                          <div
-                            className={`text-sm font-medium ${
-                              transaction.type === "investment"
-                                ? "text-gray-900"
-                                : "text-green-600"
-                            }`}
-                          >
-                            {transaction.type === "investment" ? "-" : "+"} ₹
-                            {transaction.amount.toLocaleString()}
-                          </div>
-                        </div>
-                      ))}
+                          );
+                        })}
                     </div>
                     <div className="mt-4 text-center">
                       <Button
@@ -759,73 +812,111 @@ const Dashboard = () => {
 
             {activeTab === "my-properties" && (
               <div className="space-y-8 animate-fade-in">
-                <h1 className="text-2xl font-bold text-gray-900">
-                  My Properties
+                <h1 className="text-2xl font-bold text-gray-900 ">
+                  Tokens You Own
                 </h1>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                   {userData.portfolio.map((property) => (
                     <div
                       key={property.id}
-                      className="bg-white rounded-xl shadow-sm overflow-hidden"
+                      className="bg-gray-100 text-gray-900  shadow-xl p-6 flex flex-col justify-between border border-gray-200 transition-transform hover:scale-105 hover:shadow-2xl"
                     >
-                      <div className="h-40 overflow-hidden">
+                      {/* Property Image */}
+                      <div className="relative h-40  overflow-hidden">
                         <img
                           src={property.image}
                           alt={property.title}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover "
                         />
+                        {/* <div className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-lg shadow-md">
+              {property.type}
+            </div> */}
                       </div>
-                      <div className="p-4">
-                        <h3 className="font-medium text-gray-900">
-                          {property.title}
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          {property.location}
-                        </p>
 
-                        <div className="mt-4 grid grid-cols-2 gap-4">
-                          <div>
-                            <p className="text-xs text-gray-500">
-                              Invested Amount
-                            </p>
-                            <p className="font-medium">
-                              ₹{property.investedAmount.toLocaleString()}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-gray-500">Ownership</p>
-                            <p className="font-medium">
-                              {property.ownership.toFixed(2)}%
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-gray-500">
-                              Returns Earned
-                            </p>
-                            <p className="font-medium text-green-600">
-                              ₹{property.returns.toLocaleString()}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-gray-500">
-                              Purchase Date
-                            </p>
-                            <p className="font-medium">
-                              {property.purchaseDate}
-                            </p>
-                          </div>
+                      {/* Property Details */}
+                      <h3 className="mt-4 text-xl font-semibold ">
+                        {property.title}
+                      </h3>
+                      <div className="mt-1 flex items-center text-xs text-gray-500">
+                        <MapPin className="mr-1 h-3 w-3" />
+                        <span>{property.location}</span>
+                      </div>
+
+                      <div className="mt-4 space-y-2">
+                        <div className="flex justify-between text-xs text-gray-500">
+                          <span>Invested Amount</span>
+                          <span className="font-medium">
+                            ₹{property.investedAmount.toLocaleString()}
+                          </span>
                         </div>
+                        <div className="flex justify-between text-xs text-gray-500">
+                          <span>Ownership</span>
+                          <span className="font-medium">
+                            {property.ownership}%
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-xs text-gray-500">
+                          <span>Returns Earned</span>
+                          <span className="font-medium text-green-600">
+                            ₹{property.returns.toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-xs text-gray-500">
+                          <span>Purchase Date</span>
+                          <span className="font-medium">
+                            {new Date(property.purchaseDate).toLocaleDateString(
+                              "en-GB",
+                              {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              }
+                            )}
+                          </span>
+                        </div>
+                      </div>
 
-                        <div className="mt-4">
+                      {/* Secure NFT Token Section */}
+                      <div className="mt-3  bg-gray-50  flex items-center justify-between text-[10px] font-mono shadow border border-gray-200">
+                        <span className="truncate max-w-[85%] text-gray-700 px-1">
+                          {property.nftToken}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-gray-600 hover:text-blue-500 transition p-0.5"
+                          onClick={() => copyToken(property.nftToken)}
+                        >
+                          {copiedToken === property.nftToken ? (
+                            <CheckCircle size={12} className="text-green-500" />
+                          ) : (
+                            <Copy size={12} />
+                          )}
+                        </Button>
+                      </div>
+
+                      {/* View Details Button */}
+                      <div className="mt-4 flex gap-2">
+                        <Link to={`/property/${property.id}`}>
                           <Button
                             variant="outline"
                             size="sm"
-                            className="w-full"
+                            className="w-full border-gray-400 text-gray-900 hover:bg-gray-100"
                           >
                             View Details
                           </Button>
-                        </div>
+                        </Link>
+
+                        <Link to={`/sell/${property.id}`}>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            className="w-full px-8 bg-red-500 text-white hover:bg-red-600"
+                          >
+                            Sell
+                          </Button>
+                        </Link>
                       </div>
                     </div>
                   ))}
@@ -877,9 +968,10 @@ const Dashboard = () => {
                 {wishlistView === "grid" && (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {userData.wishlist.map((property) => (
+                      //  <Link to={`/property/${property.id}`}></Link>
                       <div
                         key={property.id}
-                        className="bg-white rounded-xl shadow-sm overflow-hidden group hover:shadow-md transition-all"
+                        className="bg-white rounded- shadow-sm overflow-hidden group hover:shadow-md transition-all"
                       >
                         <div className="h-48 overflow-hidden relative">
                           <img
@@ -888,10 +980,10 @@ const Dashboard = () => {
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                           />
                           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                            <div className="p-4 flex justify-between">
-                              <span className="px-2 py-1 bg-white/80 backdrop-blur-sm rounded-full text-xs font-medium">
+                            <div className="p-1 flex justify-between">
+                              {/* <span className="px-4 py-2 bg-gray-100 backdrop-blur-sm rounded-full text-xs font-small">
                                 {property.type}
-                              </span>
+                              </span> */}
                               <button className="h-8 w-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center">
                                 <Heart
                                   className="h-4 w-4 text-rose-500"
@@ -933,7 +1025,7 @@ const Dashboard = () => {
                           </div>
 
                           <div className="mt-4">
-                            <div className="flex justify-between text-sm mb-1">
+                            {/* <div className="flex justify-between text-sm mb-1">
                               <span>Funding Progress</span>
                               <span>{property.fundingPercentage}%</span>
                             </div>
@@ -944,28 +1036,22 @@ const Dashboard = () => {
                                   width: `${property.fundingPercentage}%`,
                                 }}
                               ></div>
-                            </div>
-                            <p className="text-xs text-gray-500 mt-1">
-                              Min. Investment: ₹
-                              {property.minInvestment.toLocaleString()}
+                            </div> */}
+                            <p className="text-xs  text-gray-500 mt-1">
+                              Min. Investment:{" "}
+                              <span className="text-gray-700 font-bold">
+                                ₹{property.minInvestment.toLocaleString()}
+                              </span>
                             </p>
                           </div>
 
-                          <div className="mt-4 flex gap-2">
-                            <Button
-                              variant="default"
-                              size="sm"
-                              className="w-full"
+                          <div className="mt-4 flex">
+                            <Link
+                              to={`/property/${property.id}`}
+                              className="w-full text-center bg-yellow-200 text-gray-700 font-semibold py-2 px-4  transition-all hover:text-gray-500 hover:bg-white shadow-md"
                             >
-                              Invest Now
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="flex-shrink-0"
-                            >
-                              <Star className="h-4 w-4" />
-                            </Button>
+                              Invest Now 
+                            </Link>
                           </div>
                         </div>
                       </div>

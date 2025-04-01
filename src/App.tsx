@@ -17,6 +17,7 @@ import InvestStep1 from "./pages/InvestStep1";
 import InvestStep2 from "./pages/InvestStep2";
 import InvestStep3 from "./pages/InvestStep3";
 import InvestStep4 from "./pages/InvestStep4";
+import { ToastContainer } from "react-toastify";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
+      <ToastContainer position="top-right" autoClose={3000} />
       <Sonner />
       <BrowserRouter>
       <Navbar/>

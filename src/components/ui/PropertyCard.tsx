@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Heart, Share2, MapPin } from "lucide-react";
 import { Badge } from "../../components/ui/badge";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface Owner {
   userId: {
@@ -25,6 +27,7 @@ interface PropertyCardProps {
   images: string[];
   status: string;
   className?: string;
+  propertyId:string
 }
 
 const PropertyCard = ({
@@ -39,13 +42,47 @@ const PropertyCard = ({
   images,
   status,
   className = "",
+  propertyId,
 }: PropertyCardProps) => {
   const [isFavorite, setIsFavorite] = useState(false);
 
-  const toggleFavorite = (e: React.MouseEvent) => {
+  const toggleFavorite = async (e: React.MouseEvent, propertyId: string) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsFavorite(!isFavorite);
+
+    try {
+      const userId = localStorage.getItem("_id");
+      if (!userId) {
+        toast.warning("Please log in to manage your wishlist.");
+        return;
+      }
+
+      const isAdding = !isFavorite; // Determine action
+      const baseUrl =
+        process.env.NODE_ENV === "production"
+          ? process.env.NEXT_PUBLIC_BACKEND_URL
+          : "http://localhost:5000";
+      const response = await fetch(`${baseUrl}/api/properties/togglewishlist/${propertyId}`, {
+        method: "POST" ,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to update wishlist");
+      }
+
+      setIsFavorite(isAdding); // Update UI state
+      toast.success(
+        isAdding ? "Added to Wishlist! 🎉" : "Removed from Wishlist. ❌"
+      );
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Something went wrong. Please try again.");
+    }
   };
 
   const shareProperty = (e: React.MouseEvent) => {
@@ -69,16 +106,17 @@ const PropertyCard = ({
           {/* Actions */}
           <div className="absolute top-3 right-3 flex space-x-2">
             <button
-              onClick={toggleFavorite}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-sm transition-colors hover:bg-white"
-              aria-label="Add to favorites"
+              onClick={(e) => toggleFavorite(e, _id)}
+              className={`flex h-8 w-8 items-center justify-center rounded-full 
+    ${isFavorite ? "bg-white text-white" : "bg-white/90 text-gray-700"} 
+    shadow-sm transition-colors hover:bg-red-600 hover:text-white`}
+              aria-label={
+                isFavorite ? "Remove from favorites" : "Add to favorites"
+              }
             >
-              <Heart
-                className={`h-4 w-4 ${
-                  isFavorite ? "fill-red-500 text-red-500" : "text-gray-600"
-                }`}
-              />
+              {isFavorite ? "❤️" : "🤍"}
             </button>
+
             <button
               onClick={shareProperty}
               className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-sm transition-colors hover:bg-white"
@@ -130,9 +168,7 @@ const PropertyCard = ({
               <p className="text-xs text-gray-500">Price Per Share</p>
             </div>
             <div className="rounded-md bg-gray-50 px-2 py-1.5">
-              <p className="text-xs font-medium text-gray-900">
-                {totalShares}
-              </p>
+              <p className="text-xs font-medium text-gray-900">{totalShares}</p>
               <p className="text-xs text-gray-500">Total Shares</p>
             </div>
             <div className="rounded-md bg-gray-50 px-2 py-1.5">
