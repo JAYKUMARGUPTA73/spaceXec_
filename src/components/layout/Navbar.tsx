@@ -150,7 +150,7 @@ const Navbar: React.FC = () => {
         
         try {
           const response = await fetch(
-            `http://localhost:5000/api/users/notifications/${storedId}`
+            `http://51.79.146.251:5000/api/users/notifications/${storedId}`
           );
           if (!response.ok) throw new Error("Failed to fetch notifications");
           
@@ -171,7 +171,7 @@ const Navbar: React.FC = () => {
     try {
       const baseUrl = process.env.NODE_ENV === "production"
         ? process.env.REACT_APP_BACKEND_URL
-        : "http://localhost:5000";
+        : "http://51.79.146.251:5000";
       
       const response = await fetch(`${baseUrl}/api/users/logout`, {
         method: "POST",

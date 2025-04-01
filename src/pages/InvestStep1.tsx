@@ -21,7 +21,7 @@ const InvestPage = () => {
         const baseUrl =
           process.env.NODE_ENV === "production"
             ? process.env.REACT_APP_BACKEND_URL
-            : "http://localhost:5000";
+            : "http://51.79.146.251:5000";
 
         const response = await fetch(`${baseUrl}/api/properties/${propertyId}`);
         if (!response.ok) throw new Error("Failed to fetch property data");
