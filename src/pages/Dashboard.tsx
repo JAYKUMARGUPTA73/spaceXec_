@@ -1,17 +1,60 @@
+import { useEffect, useState } from "react";
+import {
+  Home,
+  User,
+  FileText,
+  DollarSign,
+  Clock,
+  Bell,
+  LogOut,
+  Settings,
+  BarChart2,
+  TrendingUp,
+  Activity,
+  Heart,
+  Star,
+} from "lucide-react";
+import Navbar from "@/components/layout/Navbar";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import PropertyCard from "@/components/ui/PropertyCard";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+const data_ = [
+  { name: "Category A", value: 40 },
+  { name: "Category B", value: 30 },
+  { name: "Category C", value: 20 },
+  { name: "Category D", value: 10 },
+];
+const data1_ = [
+  { name: "Jan", invested: 5000, totalInvested: 5000, portfolioValue: 5200 },
+  { name: "Feb", invested: 3000, totalInvested: 8000, portfolioValue: 8500 },
+  { name: "Mar", invested: 2000, totalInvested: 10000, portfolioValue: 10200 },
+  { name: "Apr", invested: 4000, totalInvested: 14000, portfolioValue: 14500 },
+  { name: "May", invested: 3500, totalInvested: 17500, portfolioValue: 18000 },
+  { name: "Jun", invested: 4500, totalInvested: 22000, portfolioValue: 22500 },
+];
 
-import { useState } from 'react';
-import { 
-  Home, User, FileText, DollarSign, Clock, Bell, LogOut, 
-  Settings, BarChart2, PieChart, TrendingUp, Activity
-} from 'lucide-react';
-import Navbar from '@/components/layout/Navbar';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import PropertyCard from '@/components/ui/PropertyCard';
-
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 // Sample user data
-const userData = {
+const user_d = {
   name: "Rahul Sharma",
   email: "rahul.sharma@example.com",
   phone: "+91 98765 43210",
@@ -21,19 +64,20 @@ const userData = {
   totalReturns: 26000,
   portfolio: [
     {
-      id: "1",
-      title: "Luxury Apartment in South Delhi",
-      location: "Green Park, Delhi",
-      price: 15000000,
-      yield: 14.5,
-      minInvestment: 25000,
-      image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80",
-      type: "Residential",
-      area: 1250,
-      investedAmount: 100000,
-      ownership: 0.67,
-      returns: 14500,
-      purchaseDate: "March 15, 2022",
+      id: "1", //
+      title: "Luxury Apartment in South Delhi", //
+      location: "Green Park, Delhi",//
+      price: 15000000, //
+      yield: 14.5, //
+      minInvestment: 25000, //
+      image:
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80",
+      type: "Residential", //
+      area: 1250, //
+      investedAmount: 100000, //
+      ownership: 0.67,//
+      returns: 145000, //
+      purchaseDate: "March 15, 2022",//
     },
     {
       id: "2",
@@ -42,7 +86,8 @@ const userData = {
       price: 27500000,
       yield: 16.2,
       minInvestment: 50000,
-      image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2053&q=80",
+      image:
+        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2053&q=80",
       type: "Commercial",
       area: 2100,
       investedAmount: 75000,
@@ -57,13 +102,69 @@ const userData = {
       price: 12500000,
       yield: 13.2,
       minInvestment: 20000,
-      image: "https://images.unsplash.com/photo-1559767949-0faa5c7e9992?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      image:
+        "https://images.unsplash.com/photo-1559767949-0faa5c7e9992?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
       type: "Vacation",
       area: 1650,
       investedAmount: 25000,
       ownership: 0.2,
       returns: 3300,
       purchaseDate: "October 10, 2022",
+    },
+  ],
+  // New wishlist properties
+  wishlist: [
+    {
+      id: "w1",
+      title: "Beachfront Villa in Goa",
+      location: "Calangute, Goa",
+      price: 35000000,
+      yield: 12.8,
+      minInvestment: 100000,
+      image:
+        "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      type: "Vacation",
+      area: 2200,
+      fundingPercentage: 78,
+    },
+    {
+      id: "w2",
+      title: "Office Space in Mumbai",
+      location: "Bandra Kurla Complex, Mumbai",
+      price: 42000000,
+      yield: 15.5,
+      minInvestment: 75000,
+      image:
+        "https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      type: "Commercial",
+      area: 1800,
+      fundingPercentage: 65,
+    },
+    {
+      id: "w3",
+      title: "Premium Apartment in Bangalore",
+      location: "Koramangala, Bangalore",
+      price: 18000000,
+      yield: 13.9,
+      minInvestment: 30000,
+      image:
+        "https://images.unsplash.com/photo-1493809842364-78817add7ffb?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      type: "Residential",
+      area: 1450,
+      fundingPercentage: 92,
+    },
+    {
+      id: "w4",
+      title: "Hill View Cottage in Mussoorie",
+      location: "Mussoorie, Uttarakhand",
+      price: 9500000,
+      yield: 11.8,
+      minInvestment: 15000,
+      image:
+        "https://images.unsplash.com/photo-1518780664697-55e3ad937233?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      type: "Vacation",
+      area: 950,
+      fundingPercentage: 45,
     },
   ],
   transactions: [
@@ -140,7 +241,8 @@ const userData = {
     {
       id: "n3",
       date: "October 15, 2022",
-      message: "New property listing matching your preferences is now available",
+      message:
+        "New property listing matching your preferences is now available",
       read: true,
     },
     {
@@ -153,38 +255,85 @@ const userData = {
 };
 
 const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState("overview");
+  const [wishlistView, setWishlistView] = useState("grid"); // 'grid' or 'tile'
+  const [userId,setuserId]=useState("");
+  const [dashboardData, setDashboardData] = useState(null);
+  const [error, setError] = useState(null);
+  const [userData,setUserData]=useState(user_d)
+  const [data,setData]=useState(data_);
+  const [data1,setData1]=useState(data1_);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const id = localStorage.getItem("_id");
+        if (!id) {
+          throw new Error("User ID not found in localStorage");
+        }
+
+        const baseUrl =
+          process.env.NODE_ENV === "production"
+            ? process.env.NEXT_PUBLIC_BACKEND_URL
+            : "http://localhost:5000";
+
+        const response = await fetch(`${baseUrl}/api/users/dashboard/${id}`);
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        setUserData(data.data.userData)
+        setData(data.data.charts.pieChartData
+        )
+        setData1(data.data.charts.monthlyTrackData)
+        console.log(data.data)
+        setDashboardData(data);
+      } catch (err) {
+        setError(err.message);
+        console.error("Failed to fetch dashboard data:", err);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+  
+  // Function to toggle between grid and tile view
+  const toggleWishlistView = () => {
+    setWishlistView(wishlistView === "grid" ? "tile" : "grid");
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
-      
-      <div className="container mx-auto pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto pt-3 pb-12 py-2 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar Navigation */}
           <aside className="md:w-64 flex-shrink-0">
-            <div className="sticky top-24 bg-white rounded-xl shadow-sm overflow-hidden">
+            <div className="sticky top-0 bg-white rounded-xl shadow-sm overflow-hidden">
               <div className="p-4 border-b border-gray-100">
                 <div className="flex items-center space-x-3">
                   <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
                     <User className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <h2 className="font-medium text-gray-900">{userData.name}</h2>
+                    <h2 className="font-medium text-gray-900">
+                      {userData.name}
+                    </h2>
                     <p className="text-xs text-gray-500">Customer</p>
                   </div>
                 </div>
               </div>
-              
+
               <nav className="p-2">
                 <ul className="space-y-1">
                   <li>
-                    <button 
-                      onClick={() => setActiveTab('overview')}
+                    <button
+                      onClick={() => setActiveTab("overview")}
                       className={`w-full flex items-center space-x-3 px-3 py-2 rounded-md transition-colors ${
-                        activeTab === 'overview' 
-                        ? 'bg-primary/10 text-primary font-medium' 
-                        : 'text-gray-700 hover:bg-gray-100'
+                        activeTab === "overview"
+                          ? "bg-primary/10 text-primary font-medium"
+                          : "text-gray-700 hover:bg-gray-100"
                       }`}
                     >
                       <Home className="h-5 w-5" />
@@ -192,25 +341,42 @@ const Dashboard = () => {
                     </button>
                   </li>
                   <li>
-                    <button 
-                      onClick={() => setActiveTab('my-properties')}
+                    <button
+                      onClick={() => setActiveTab("my-properties")}
                       className={`w-full flex items-center space-x-3 px-3 py-2 rounded-md transition-colors ${
-                        activeTab === 'my-properties' 
-                        ? 'bg-primary/10 text-primary font-medium' 
-                        : 'text-gray-700 hover:bg-gray-100'
+                        activeTab === "my-properties"
+                          ? "bg-primary/10 text-primary font-medium"
+                          : "text-gray-700 hover:bg-gray-100"
                       }`}
                     >
                       <Home className="h-5 w-5" />
                       <span>My Properties</span>
                     </button>
                   </li>
+                  {/* New Wishlist Navigation Item */}
                   <li>
-                    <button 
-                      onClick={() => setActiveTab('transactions')}
+                    <button
+                      onClick={() => setActiveTab("wishlist")}
                       className={`w-full flex items-center space-x-3 px-3 py-2 rounded-md transition-colors ${
-                        activeTab === 'transactions' 
-                        ? 'bg-primary/10 text-primary font-medium' 
-                        : 'text-gray-700 hover:bg-gray-100'
+                        activeTab === "wishlist"
+                          ? "bg-primary/10 text-primary font-medium"
+                          : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                    >
+                      <Heart className="h-5 w-5" />
+                      <span>Wishlist</span>
+                      <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-white">
+                        {userData.wishlist.length}
+                      </span>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => setActiveTab("transactions")}
+                      className={`w-full flex items-center space-x-3 px-3 py-2 rounded-md transition-colors ${
+                        activeTab === "transactions"
+                          ? "bg-primary/10 text-primary font-medium"
+                          : "text-gray-700 hover:bg-gray-100"
                       }`}
                     >
                       <DollarSign className="h-5 w-5" />
@@ -218,30 +384,31 @@ const Dashboard = () => {
                     </button>
                   </li>
                   <li>
-                    <button 
-                      onClick={() => setActiveTab('notifications')}
+                    <button
+                      onClick={() => setActiveTab("notifications")}
                       className={`w-full flex items-center space-x-3 px-3 py-2 rounded-md transition-colors ${
-                        activeTab === 'notifications' 
-                        ? 'bg-primary/10 text-primary font-medium' 
-                        : 'text-gray-700 hover:bg-gray-100'
+                        activeTab === "notifications"
+                          ? "bg-primary/10 text-primary font-medium"
+                          : "text-gray-700 hover:bg-gray-100"
                       }`}
                     >
                       <Bell className="h-5 w-5" />
                       <span>Notifications</span>
-                      {userData.notifications.filter(n => !n.read).length > 0 && (
+                      {userData.notifications.filter((n) => !n.read).length >
+                        0 && (
                         <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-white">
-                          {userData.notifications.filter(n => !n.read).length}
+                          {userData.notifications.filter((n) => !n.read).length}
                         </span>
                       )}
                     </button>
                   </li>
                   <li>
-                    <button 
-                      onClick={() => setActiveTab('profile')}
+                    <button
+                      onClick={() => setActiveTab("profile")}
                       className={`w-full flex items-center space-x-3 px-3 py-2 rounded-md transition-colors ${
-                        activeTab === 'profile' 
-                        ? 'bg-primary/10 text-primary font-medium' 
-                        : 'text-gray-700 hover:bg-gray-100'
+                        activeTab === "profile"
+                          ? "bg-primary/10 text-primary font-medium"
+                          : "text-gray-700 hover:bg-gray-100"
                       }`}
                     >
                       <User className="h-5 w-5" />
@@ -249,12 +416,12 @@ const Dashboard = () => {
                     </button>
                   </li>
                   <li>
-                    <button 
-                      onClick={() => setActiveTab('support')}
+                    <button
+                      onClick={() => setActiveTab("support")}
                       className={`w-full flex items-center space-x-3 px-3 py-2 rounded-md transition-colors ${
-                        activeTab === 'support' 
-                        ? 'bg-primary/10 text-primary font-medium' 
-                        : 'text-gray-700 hover:bg-gray-100'
+                        activeTab === "support"
+                          ? "bg-primary/10 text-primary font-medium"
+                          : "text-gray-700 hover:bg-gray-100"
                       }`}
                     >
                       <FileText className="h-5 w-5" />
@@ -263,10 +430,10 @@ const Dashboard = () => {
                   </li>
                 </ul>
               </nav>
-              
+
               <div className="p-4 border-t border-gray-100">
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   className="w-full justify-start text-gray-700"
                 >
                   <LogOut className="mr-2 h-4 w-4" />
@@ -275,19 +442,21 @@ const Dashboard = () => {
               </div>
             </div>
           </aside>
-          
+
           {/* Main Content */}
           <main className="flex-1">
-            {activeTab === 'overview' && (
-              <div className="space-y-8 animate-fade-in">
-                <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-                
+            {activeTab === "overview" && (
+              <div className="space animate-fade-in ">
+                {/* <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1> */}
+
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <Card>
                     <CardHeader className="pb-2">
                       <CardDescription>Total Invested</CardDescription>
-                      <CardTitle className="text-2xl">₹{userData.totalInvested.toLocaleString()}</CardTitle>
+                      <CardTitle className="text-2xl">
+                        ₹{userData.totalInvested.toLocaleString()}
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="text-xs text-muted-foreground">
@@ -297,20 +466,31 @@ const Dashboard = () => {
                   </Card>
                   <Card>
                     <CardHeader className="pb-2">
-                      <CardDescription>Total Returns</CardDescription>
-                      <CardTitle className="text-2xl">₹{userData.totalReturns.toLocaleString()}</CardTitle>
+                      <CardDescription >Total Returns</CardDescription>
+                      <CardTitle className="text-2xl text-green-700">
+                         +₹{userData.totalReturns.toLocaleString()}
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="text-xs text-green-600 flex items-center">
+                      <div className="text-xs text-green-700 flex items-center">
                         <TrendingUp className="h-3 w-3 mr-1" />
-                        {((userData.totalReturns / userData.totalInvested) * 100).toFixed(2)}% on investment
+                        {(
+                          (userData.totalReturns / userData.totalInvested) *
+                          100
+                        ).toFixed(2)}
+                        % on investment
                       </div>
                     </CardContent>
                   </Card>
                   <Card>
                     <CardHeader className="pb-2">
                       <CardDescription>Current Portfolio Value</CardDescription>
-                      <CardTitle className="text-2xl">₹{(userData.totalInvested + userData.totalReturns).toLocaleString()}</CardTitle>
+                      <CardTitle className="text-2xl">
+                        ₹
+                        {(
+                          userData.totalInvested + userData.totalReturns
+                        ).toLocaleString()}
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="text-xs text-muted-foreground">
@@ -319,9 +499,9 @@ const Dashboard = () => {
                     </CardContent>
                   </Card>
                 </div>
-                
+
                 {/* Charts */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <Card>
                     <CardHeader>
                       <CardTitle>Portfolio Allocation</CardTitle>
@@ -342,8 +522,168 @@ const Dashboard = () => {
                       </div>
                     </CardContent>
                   </Card>
+                </div> */}
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 mt-6">
+                  {/* Pie Chart placeholder */}
+                  <Card className="lg:col-span-1">
+                    <CardHeader>
+                      <CardTitle className="flex items-center">
+                        <div className="flex justify-between w-full">
+                          <span>Portfolio Allocation</span>
+                        </div>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="h-64 flex items-center justify-center">
+                      <ResponsiveContainer>
+                        <PieChart width={300} height={250}>
+                          <Pie
+                            data={data}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={30}
+                            outerRadius={50}
+                            fill="#8884d8"
+                            paddingAngle={1}
+                            dataKey="value"
+                            label={({ name, percent }) =>
+                              `${(percent * 100).toFixed(0)}%`
+                            } // Show name & percentage
+                          >
+                            {data.map((_, index) => (
+                              <Cell
+                                key={`cell-${index}`}
+                                fill={COLORS[index % COLORS.length]}
+                              />
+                            ))}
+                          </Pie>
+                          
+                          {/* <Tooltip /> */}
+
+                          <Legend className="mt-20" />
+                        </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Bar Chart placeholder */}
+                  <Card className="lg:col-span-2">
+                    <CardHeader>
+                      <CardTitle className="flex items-center justify-between">
+                        <span>Portfolio History</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="h-64">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart
+                            data={data1}
+                            margin={{
+                              top: 20,
+                              right: 70,
+                              left: 0,
+                              bottom: 20,
+                            }}
+                          >
+                            <XAxis dataKey="name" stroke="#8884d8" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Bar
+                              dataKey="invested"
+                              fill="#82ca9d"
+                              barSize={5}
+                              name="Invested"
+                            />
+                            <Bar
+                              dataKey="totalInvested"
+                              fill="#8884d8"
+                              barSize={5}
+                              name="Total Invested"
+                            />
+                            <Bar
+                              dataKey="portfolioValue"
+                              fill="#ffc658"
+                              barSize={5}
+                              name="Portfolio Value"
+                            />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
-                
+
+                {/* Wishlist Preview Section */}
+                <Card className="my-6">
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <div className="space-y-1">
+                      <CardTitle className="flex items-center">
+                        <Heart className="mr-2 h-5 w-5 text-rose-500" />
+                        Wishlist Highlights
+                      </CardTitle>
+                      <CardDescription>
+                        Properties you've saved for future investment
+                      </CardDescription>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setActiveTab("wishlist")}
+                    >
+                      View All
+                    </Button>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                      {userData.wishlist.slice(0, 4).map((property) => (
+                        <div
+                          key={property.id}
+                          className="bg-white rounded-lg shadow-sm overflow-hidden group hover:shadow-md transition-all relative"
+                        >
+                          <div className="h-24 overflow-hidden">
+                            <img
+                              src={property.image}
+                              alt={property.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                            />
+                            <div className="absolute top-0 right-0 p-1">
+                              <div className="bg-white/80 backdrop-blur-sm p-1 rounded-full">
+                                <Heart
+                                  className="h-4 w-4 text-rose-500"
+                                  fill="#ec4899"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="p-2">
+                            <p className="font-medium text-xs truncate">
+                              {property.title}
+                            </p>
+                            <p className="text-xs text-gray-500 truncate">
+                              {property.location}
+                            </p>
+                            <div className="mt-1 flex justify-between items-center">
+                              <span className="text-xs font-semibold">
+                                ₹
+                                {Math.round(
+                                  property.price / 100000
+                                ).toLocaleString()}{" "}
+                                L
+                              </span>
+                              <span className="text-xs bg-green-100 text-green-800 px-1.5 py-0.5 rounded-full">
+                                {property.yield}% yield
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
                 {/* Recent Activity */}
                 <Card>
                   <CardHeader>
@@ -355,40 +695,60 @@ const Dashboard = () => {
                   <CardContent>
                     <div className="space-y-4">
                       {userData.transactions.slice(0, 5).map((transaction) => (
-                        <div key={transaction.id} className="flex items-center justify-between border-b border-gray-100 pb-2">
+                        <div
+                          key={transaction.id}
+                          className="flex items-center justify-between border-b border-gray-100 pb-2"
+                        >
                           <div className="flex items-start space-x-3">
-                            <div className={`mt-1 h-8 w-8 rounded-full flex items-center justify-center ${
-                              transaction.type === 'investment' 
-                                ? 'bg-blue-100' 
-                                : 'bg-green-100'
-                            }`}>
-                              {transaction.type === 'investment' ? (
-                                <TrendingUp className={`h-4 w-4 text-blue-600`} />
+                            <div
+                              className={`mt-1 h-8 w-8 rounded-full flex items-center justify-center ${
+                                transaction.type === "investment"
+                                  ? "bg-blue-100"
+                                  : "bg-green-100"
+                              }`}
+                            >
+                              {transaction.type === "investment" ? (
+                                <TrendingUp
+                                  className={`h-4 w-4 text-blue-600`}
+                                />
                               ) : (
-                                <DollarSign className={`h-4 w-4 text-green-600`} />
+                                <DollarSign
+                                  className={`h-4 w-4 text-green-600`}
+                                />
                               )}
                             </div>
                             <div>
                               <p className="font-medium text-gray-900">
-                                {transaction.type === 'investment' ? 'Invested in' : 'Return from'} {transaction.property}
+                                {transaction.type === "investment"
+                                  ? "Invested in"
+                                  : "Return from"}{" "}
+                                {transaction.property}
                               </p>
                               <p className="text-xs text-gray-500">
                                 {transaction.date}
                               </p>
                             </div>
                           </div>
-                          <div className={`text-sm font-medium ${
-                            transaction.type === 'investment' 
-                              ? 'text-gray-900' 
-                              : 'text-green-600'
-                          }`}>
-                            {transaction.type === 'investment' ? '-' : '+'} ₹{transaction.amount.toLocaleString()}
+                          <div
+                            className={`text-sm font-medium ${
+                              transaction.type === "investment"
+                                ? "text-gray-900"
+                                : "text-green-600"
+                            }`}
+                          >
+                            {transaction.type === "investment" ? "-" : "+"} ₹
+                            {transaction.amount.toLocaleString()}
                           </div>
                         </div>
                       ))}
                     </div>
                     <div className="mt-4 text-center">
-                      <Button variant="ghost" size="sm" className="text-primary" onClick={() => setActiveTab('transactions')}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-primary"
+                        onClick={() => setActiveTab("transactions")}
+                      >
                         View All Transactions
                       </Button>
                     </div>
@@ -396,46 +756,73 @@ const Dashboard = () => {
                 </Card>
               </div>
             )}
-            
-            {activeTab === 'my-properties' && (
+
+            {activeTab === "my-properties" && (
               <div className="space-y-8 animate-fade-in">
-                <h1 className="text-2xl font-bold text-gray-900">My Properties</h1>
-                
+                <h1 className="text-2xl font-bold text-gray-900">
+                  My Properties
+                </h1>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {userData.portfolio.map((property) => (
-                    <div key={property.id} className="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div
+                      key={property.id}
+                      className="bg-white rounded-xl shadow-sm overflow-hidden"
+                    >
                       <div className="h-40 overflow-hidden">
-                        <img 
-                          src={property.image} 
-                          alt={property.title} 
+                        <img
+                          src={property.image}
+                          alt={property.title}
                           className="w-full h-full object-cover"
                         />
                       </div>
                       <div className="p-4">
-                        <h3 className="font-medium text-gray-900">{property.title}</h3>
-                        <p className="text-sm text-gray-500">{property.location}</p>
-                        
+                        <h3 className="font-medium text-gray-900">
+                          {property.title}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          {property.location}
+                        </p>
+
                         <div className="mt-4 grid grid-cols-2 gap-4">
                           <div>
-                            <p className="text-xs text-gray-500">Invested Amount</p>
-                            <p className="font-medium">₹{property.investedAmount.toLocaleString()}</p>
+                            <p className="text-xs text-gray-500">
+                              Invested Amount
+                            </p>
+                            <p className="font-medium">
+                              ₹{property.investedAmount.toLocaleString()}
+                            </p>
                           </div>
                           <div>
                             <p className="text-xs text-gray-500">Ownership</p>
-                            <p className="font-medium">{property.ownership.toFixed(2)}%</p>
+                            <p className="font-medium">
+                              {property.ownership.toFixed(2)}%
+                            </p>
                           </div>
                           <div>
-                            <p className="text-xs text-gray-500">Returns Earned</p>
-                            <p className="font-medium text-green-600">₹{property.returns.toLocaleString()}</p>
+                            <p className="text-xs text-gray-500">
+                              Returns Earned
+                            </p>
+                            <p className="font-medium text-green-600">
+                              ₹{property.returns.toLocaleString()}
+                            </p>
                           </div>
                           <div>
-                            <p className="text-xs text-gray-500">Purchase Date</p>
-                            <p className="font-medium">{property.purchaseDate}</p>
+                            <p className="text-xs text-gray-500">
+                              Purchase Date
+                            </p>
+                            <p className="font-medium">
+                              {property.purchaseDate}
+                            </p>
                           </div>
                         </div>
-                        
+
                         <div className="mt-4">
-                          <Button variant="outline" size="sm" className="w-full">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                          >
                             View Details
                           </Button>
                         </div>
@@ -445,111 +832,306 @@ const Dashboard = () => {
                 </div>
               </div>
             )}
-            
-            {activeTab === 'transactions' && (
+
+            {/* New Wishlist Tab */}
+            {activeTab === "wishlist" && (
               <div className="space-y-8 animate-fade-in">
                 <div className="flex justify-between items-center">
-                  <h1 className="text-2xl font-bold text-gray-900">Transactions</h1>
+                  <h1 className="text-2xl font-bold text-gray-900">
+                    My Wishlist
+                  </h1>
                   <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={toggleWishlistView}
+                      className="flex items-center"
+                    >
+                      {wishlistView === "grid" ? (
+                        <>
+                          <div className="mr-2 flex space-x-0.5">
+                            <div className="h-2 w-2 bg-primary rounded-sm"></div>
+                            <div className="h-2 w-2 bg-primary rounded-sm"></div>
+                          </div>
+                          Tile View
+                        </>
+                      ) : (
+                        <>
+                          <div className="mr-2 grid grid-cols-2 gap-0.5">
+                            <div className="h-2 w-2 bg-primary rounded-sm"></div>
+                            <div className="h-2 w-2 bg-primary rounded-sm"></div>
+                            <div className="h-2 w-2 bg-primary rounded-sm"></div>
+                            <div className="h-2 w-2 bg-primary rounded-sm"></div>
+                          </div>
+                          Grid View
+                        </>
+                      )}
+                    </Button>
                     <Button variant="outline" size="sm">
                       Filter
                     </Button>
-                    <Button variant="outline" size="sm">
-                      Export
-                    </Button>
                   </div>
                 </div>
-                
-                <Card>
-                  <CardContent className="p-0">
-                    <div className="rounded-lg border border-gray-200 overflow-hidden">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Date
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Description
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Amount
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Status
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                          {userData.transactions.map((transaction) => (
-                            <tr key={transaction.id}>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {transaction.date}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {transaction.type === 'investment' ? 'Investment in' : 'Return from'} {transaction.property}
-                              </td>
-                              <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${
-                                transaction.type === 'investment' 
-                                  ? 'text-gray-900' 
-                                  : 'text-green-600'
-                              }`}>
-                                {transaction.type === 'investment' ? '-' : '+'} ₹{transaction.amount.toLocaleString()}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                  Completed
-                                </span>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </CardContent>
-                </Card>
+
+                {/* Grid View */}
+                {wishlistView === "grid" && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {userData.wishlist.map((property) => (
+                      <div
+                        key={property.id}
+                        className="bg-white rounded-xl shadow-sm overflow-hidden group hover:shadow-md transition-all"
+                      >
+                        <div className="h-48 overflow-hidden relative">
+                          <img
+                            src={property.image}
+                            alt={property.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                          />
+                          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="p-4 flex justify-between">
+                              <span className="px-2 py-1 bg-white/80 backdrop-blur-sm rounded-full text-xs font-medium">
+                                {property.type}
+                              </span>
+                              <button className="h-8 w-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center">
+                                <Heart
+                                  className="h-4 w-4 text-rose-500"
+                                  fill="#ec4899"
+                                />
+                              </button>
+                            </div>
+                          </div>
+                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
+                            <div className="flex justify-between items-center">
+                              <span className="text-white text-sm font-medium">
+                                ₹
+                                {Math.round(
+                                  property.price / 100000
+                                ).toLocaleString()}{" "}
+                                Lac
+                              </span>
+                              <span className="bg-green-500 text-white px-2 py-0.5 rounded text-xs">
+                                {property.yield}% yield
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-4">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h3 className="font-medium text-gray-900 truncate">
+                                {property.title}
+                              </h3>
+                              <p className="text-sm text-gray-500">
+                                {property.location}
+                              </p>
+                            </div>
+                            <div className="flex flex-col items-end">
+                              <p className="text-xs font-medium text-gray-900">
+                                {property.area} sq.ft
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="mt-4">
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Funding Progress</span>
+                              <span>{property.fundingPercentage}%</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div
+                                className="bg-primary h-2 rounded-full"
+                                style={{
+                                  width: `${property.fundingPercentage}%`,
+                                }}
+                              ></div>
+                            </div>
+                            <p className="text-xs text-gray-500 mt-1">
+                              Min. Investment: ₹
+                              {property.minInvestment.toLocaleString()}
+                            </p>
+                          </div>
+
+                          <div className="mt-4 flex gap-2">
+                            <Button
+                              variant="default"
+                              size="sm"
+                              className="w-full"
+                            >
+                              Invest Now
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="flex-shrink-0"
+                            >
+                              <Star className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Tile View */}
+                {wishlistView === "tile" && (
+                  <div className="space-y-4">
+                    {userData.wishlist.map((property) => (
+                      <div
+                        key={property.id}
+                        className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-all"
+                      >
+                        <div className="flex flex-col sm:flex-row">
+                          <div className="sm:w-1/3 h-48 sm:h-auto overflow-hidden">
+                            <img
+                              src={property.image}
+                              alt={property.title}
+                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                            />
+                          </div>
+                          <div className="sm:w-2/3 p-4">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <div className="flex items-center">
+                                  <h3 className="font-medium text-gray-900">
+                                    {property.title}
+                                  </h3>
+                                  <span className="ml-2 px-2 py-0.5 bg-gray-100 rounded-full text-xs font-medium">
+                                    {property.type}
+                                  </span>
+                                </div>
+                                <p className="text-sm text-gray-500">
+                                  {property.location}
+                                </p>
+                              </div>
+                              <button className="h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center">
+                                <Heart
+                                  className="h-4 w-4 text-rose-500"
+                                  fill="#ec4899"
+                                />
+                              </button>
+                            </div>
+
+                            <div className="mt-4 grid grid-cols-3 gap-4">
+                              <div>
+                                <p className="text-xs text-gray-500">Price</p>
+                                <p className="font-medium">
+                                  ₹
+                                  {Math.round(
+                                    property.price / 100000
+                                  ).toLocaleString()}{" "}
+                                  Lac
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-xs text-gray-500">Area</p>
+                                <p className="font-medium">
+                                  {property.area} sq.ft
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-xs text-gray-500">
+                                  Expected Yield
+                                </p>
+                                <p className="font-medium text-green-600">
+                                  {property.yield}%
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="mt-4">
+                              <div className="flex justify-between text-sm mb-1">
+                                <span>Funding Progress</span>
+                                <span>{property.fundingPercentage}%</span>
+                              </div>
+                              <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div
+                                  className="bg-primary h-2 rounded-full"
+                                  style={{
+                                    width: `${property.fundingPercentage}%`,
+                                  }}
+                                ></div>
+                              </div>
+                              <p className="text-xs text-gray-500 mt-1">
+                                Min. Investment: ₹
+                                {property.minInvestment.toLocaleString()}
+                              </p>
+                            </div>
+
+                            <div className="mt-4 flex gap-2">
+                              <Button variant="default" size="sm">
+                                Invest Now
+                              </Button>
+                              <Button variant="outline" size="sm">
+                                View Details
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
-            
-            {activeTab === 'notifications' && (
+
+            {activeTab === "transactions" && (
               <div className="space-y-8 animate-fade-in">
-                <div className="flex justify-between items-center">
-                  <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
-                  <Button variant="ghost" size="sm">
-                    Mark all as read
-                  </Button>
-                </div>
-                
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Transactions
+                </h1>
+
                 <Card>
-                  <CardContent className="p-0">
-                    <div className="divide-y divide-gray-100">
-                      {userData.notifications.map((notification) => (
-                        <div 
-                          key={notification.id} 
-                          className={`flex items-start p-4 ${
-                            notification.read ? 'bg-white' : 'bg-blue-50'
-                          }`}
+                  <CardHeader>
+                    <CardTitle>Transaction History</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {userData.transactions.map((transaction) => (
+                        <div
+                          key={transaction.id}
+                          className="flex items-center justify-between border-b border-gray-100 pb-4"
                         >
-                          <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                            notification.read ? 'bg-gray-100' : 'bg-blue-100'
-                          } mr-3`}>
-                            <Bell className={`h-5 w-5 ${
-                              notification.read ? 'text-gray-500' : 'text-blue-500'
-                            }`} />
+                          <div className="flex items-start space-x-3">
+                            <div
+                              className={`mt-1 h-10 w-10 rounded-full flex items-center justify-center ${
+                                transaction.type === "investment"
+                                  ? "bg-blue-100"
+                                  : "bg-green-100"
+                              }`}
+                            >
+                              {transaction.type === "investment" ? (
+                                <TrendingUp
+                                  className={`h-5 w-5 text-blue-600`}
+                                />
+                              ) : (
+                                <DollarSign
+                                  className={`h-5 w-5 text-green-600`}
+                                />
+                              )}
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900">
+                                {transaction.type === "investment"
+                                  ? "Invested in"
+                                  : "Return from"}{" "}
+                                {transaction.property}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                {transaction.date}
+                              </p>
+                            </div>
                           </div>
-                          <div className="flex-1">
-                            <p className={`text-sm ${
-                              notification.read ? 'text-gray-600' : 'text-gray-900 font-medium'
-                            }`}>
-                              {notification.message}
-                            </p>
-                            <p className="text-xs text-gray-500 mt-1">
-                              {notification.date}
-                            </p>
+                          <div
+                            className={`text-lg font-medium ${
+                              transaction.type === "investment"
+                                ? "text-gray-900"
+                                : "text-green-600"
+                            }`}
+                          >
+                            {transaction.type === "investment" ? "-" : "+"} ₹
+                            {transaction.amount.toLocaleString()}
                           </div>
-                          {!notification.read && (
-                            <div className="h-2 w-2 rounded-full bg-blue-500"></div>
-                          )}
                         </div>
                       ))}
                     </div>
@@ -557,234 +1139,204 @@ const Dashboard = () => {
                 </Card>
               </div>
             )}
-            
-            {activeTab === 'profile' && (
+
+            {activeTab === "notifications" && (
               <div className="space-y-8 animate-fade-in">
-                <h1 className="text-2xl font-bold text-gray-900">Profile</h1>
-                
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Notifications
+                </h1>
+
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Personal Information</CardTitle>
-                    <CardDescription>Update your account information</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <form className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                            Full Name
-                          </label>
-                          <input
-                            type="text"
-                            id="name"
-                            value={userData.name}
-                            className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
-                          />
+                  <CardContent className="p-0">
+                    <div className="divide-y">
+                      {userData.notifications.map((notification) => (
+                        <div
+                          key={notification.id}
+                          className={`p-4 flex ${
+                            !notification.read ? "bg-blue-50" : ""
+                          }`}
+                        >
+                          <div
+                            className={`mt-1 h-10 w-10 rounded-full flex items-center justify-center ${
+                              !notification.read ? "bg-blue-100" : "bg-gray-100"
+                            }`}
+                          >
+                            <Bell
+                              className={`h-5 w-5 ${
+                                !notification.read
+                                  ? "text-blue-600"
+                                  : "text-gray-600"
+                              }`}
+                            />
+                          </div>
+                          <div className="ml-4 flex-1">
+                            <div className="flex justify-between">
+                              <p
+                                className={`font-medium ${
+                                  !notification.read
+                                    ? "text-blue-900"
+                                    : "text-gray-900"
+                                }`}
+                              >
+                                {notification.message}
+                              </p>
+                              {!notification.read && (
+                                <span className="inline-flex h-2 w-2 rounded-full bg-blue-600"></span>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-500">
+                              {notification.date}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                            Email Address
-                          </label>
-                          <input
-                            type="email"
-                            id="email"
-                            value={userData.email}
-                            className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                            Phone Number
-                          </label>
-                          <input
-                            type="tel"
-                            id="phone"
-                            value={userData.phone}
-                            className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
-                            Address
-                          </label>
-                          <input
-                            type="text"
-                            id="address"
-                            placeholder="Enter your address"
-                            className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
-                          />
-                        </div>
-                      </div>
-                      
-                      <div className="pt-4">
-                        <Button>Save Changes</Button>
-                      </div>
-                    </form>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Notification Settings</CardTitle>
-                    <CardDescription>Manage how you receive notifications</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-gray-900">Email Notifications</p>
-                          <p className="text-sm text-gray-500">Receive updates on your investments via email</p>
-                        </div>
-                        <div className="h-6 w-11 rounded-full bg-primary flex items-center p-1">
-                          <div className="h-4 w-4 rounded-full bg-white transform translate-x-5"></div>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-gray-900">SMS Notifications</p>
-                          <p className="text-sm text-gray-500">Receive updates on your investments via SMS</p>
-                        </div>
-                        <div className="h-6 w-11 rounded-full bg-primary flex items-center p-1">
-                          <div className="h-4 w-4 rounded-full bg-white transform translate-x-5"></div>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-gray-900">New Property Alerts</p>
-                          <p className="text-sm text-gray-500">Get notified when new properties matching your criteria are listed</p>
-                        </div>
-                        <div className="h-6 w-11 rounded-full bg-gray-200 flex items-center p-1">
-                          <div className="h-4 w-4 rounded-full bg-white"></div>
-                        </div>
-                      </div>
+                      ))}
                     </div>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Change Password</CardTitle>
-                    <CardDescription>Update your password to keep your account secure</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <form className="space-y-4">
-                      <div>
-                        <label htmlFor="current-password" className="block text-sm font-medium text-gray-700 mb-1">
-                          Current Password
-                        </label>
-                        <input
-                          type="password"
-                          id="current-password"
-                          placeholder="Enter your current password"
-                          className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="new-password" className="block text-sm font-medium text-gray-700 mb-1">
-                          New Password
-                        </label>
-                        <input
-                          type="password"
-                          id="new-password"
-                          placeholder="Enter your new password"
-                          className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 mb-1">
-                          Confirm Password
-                        </label>
-                        <input
-                          type="password"
-                          id="confirm-password"
-                          placeholder="Confirm your new password"
-                          className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
-                        />
-                      </div>
-                      
-                      <div className="pt-4">
-                        <Button>Update Password</Button>
-                      </div>
-                    </form>
                   </CardContent>
                 </Card>
               </div>
             )}
-            
-            {activeTab === 'support' && (
+
+            {activeTab === "profile" && (
               <div className="space-y-8 animate-fade-in">
-                <h1 className="text-2xl font-bold text-gray-900">Support</h1>
-                
+                <h1 className="text-2xl font-bold text-gray-900">Profile</h1>
+
                 <Card>
                   <CardHeader>
-                    <CardTitle>Create Support Ticket</CardTitle>
-                    <CardDescription>We're here to help. Let us know what's on your mind.</CardDescription>
+                    <CardTitle>Personal Information</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <form className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">
+                        <p className="text-sm text-gray-500">Full Name</p>
+                        <p className="font-medium">{userData.name}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Email Address</p>
+                        <p className="font-medium">{userData.email}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Phone Number</p>
+                        <p className="font-medium">{userData.phone}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Joined Date</p>
+                        <p className="font-medium">{userData.joinedDate}</p>
+                      </div>
+                    </div>
+                    <div className="mt-6">
+                      <Button>Update Profile</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Security Settings</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="font-medium">Change Password</p>
+                          <p className="text-sm text-gray-500">
+                            Last updated 3 months ago
+                          </p>
+                        </div>
+                        <Button variant="outline">Change</Button>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="font-medium">
+                            Two-Factor Authentication
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            Add an extra layer of security
+                          </p>
+                        </div>
+                        <Button variant="outline">Enable</Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            {activeTab === "support" && (
+              <div className="space-y-8 animate-fade-in">
+                <h1 className="text-2xl font-bold text-gray-900">Support</h1>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Contact Support</CardTitle>
+                    <CardDescription>
+                      Our support team is ready to assist you
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
                           Subject
                         </label>
                         <input
                           type="text"
-                          id="subject"
-                          placeholder="Enter the subject of your inquiry"
-                          className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          placeholder="How can we help you?"
                         />
                       </div>
                       <div>
-                        <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
-                          Category
-                        </label>
-                        <select
-                          id="category"
-                          className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
-                        >
-                          <option>General Inquiry</option>
-                          <option>Technical Support</option>
-                          <option>Billing Issue</option>
-                          <option>Investment Support</option>
-                          <option>Other</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
                           Message
                         </label>
                         <textarea
-                          id="message"
-                          rows={5}
-                          placeholder="Please describe your issue in detail"
-                          className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          placeholder="Describe your issue or question"
                         ></textarea>
                       </div>
                       <div>
-                        <label htmlFor="attachment" className="block text-sm font-medium text-gray-700 mb-1">
-                          Attachment (optional)
-                        </label>
-                        <input
-                          type="file"
-                          id="attachment"
-                          className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
-                        />
+                        <Button>Submit</Button>
                       </div>
-                      
-                      <div className="pt-4">
-                        <Button>Submit Ticket</Button>
-                      </div>
-                    </form>
+                    </div>
                   </CardContent>
                 </Card>
-                
+
                 <Card>
                   <CardHeader>
-                    <CardTitle>Previous Tickets</CardTitle>
+                    <CardTitle>Frequently Asked Questions</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-center py-6">
-                      <FileText className="h-12 w-12 text-gray-300 mx-auto" />
-                      <p className="mt-2 text-gray-500">You don't have any support tickets yet</p>
+                    <div className="space-y-4">
+                      <div>
+                        <p className="font-medium">
+                          How do fractional property investments work?
+                        </p>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Fractional property investments allow you to own a
+                          percentage of a property rather than purchasing it
+                          outright. This gives you proportional ownership rights
+                          and returns based on your investment amount.
+                        </p>
+                      </div>
+                      <div>
+                        <p className="font-medium">
+                          What are the minimum investment amounts?
+                        </p>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Minimum investments vary by property but typically
+                          start from ₹15,000. Each property listing will clearly
+                          display the minimum investment amount required.
+                        </p>
+                      </div>
+                      <div>
+                        <p className="font-medium">
+                          How are returns distributed?
+                        </p>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Returns are distributed monthly directly to your bank
+                          account. The amount is proportional to your ownership
+                          percentage in each property.
+                        </p>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

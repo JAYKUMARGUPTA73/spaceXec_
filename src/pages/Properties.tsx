@@ -103,7 +103,7 @@ const Properties = () => {
         const baseUrl =
           process.env.NODE_ENV === "production"
             ? process.env.NEXT_PUBLIC_BACKEND_URL
-            : "https://d03c-2401-4900-a18c-58f4-cdd4-8bcc-f50d-1323.ngrok-free.app";
+            : "http://localhost:5000";
         const response = await fetch(`${baseUrl}/api/properties/all`);
         
         if (!response.ok) {

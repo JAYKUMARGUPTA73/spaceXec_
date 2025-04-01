@@ -252,11 +252,11 @@ const Navbar: React.FC = () => {
       </div>
       <div className="py-1">
         <Link 
-          to={`/myprofile/${userId}`} 
+          to={`/dashboard/${userId}`} 
           className="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-100"
           onClick={() => setIsProfileMenuOpen(false)}
         >
-          <FaUser className="mr-3" /> My Profile
+          <FaUser className="mr-3" /> Dashboard
         </Link>
         <Link 
           to="/settings" 
