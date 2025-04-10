@@ -79,7 +79,7 @@ export default function Login() {
     const baseUrl =
       process.env.NODE_ENV === "production"
         ? process.env.REACT_APP_BACKEND_URL
-        : "http://51.79.146.251:5000";
+        : "http://localhost:5000";
 
     try {
       const res = await fetch(`${baseUrl}/api/users/login`, {
@@ -108,7 +108,7 @@ export default function Login() {
 
       switch (data.role) {
         case "admin":
-          navigate("/dashboard/admin", { replace: true });
+          navigate("/admindashboard", { replace: true });
           window.location.reload();
           break;
         case "vendor":

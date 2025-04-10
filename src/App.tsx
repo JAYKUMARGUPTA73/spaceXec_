@@ -18,6 +18,8 @@ import InvestStep2 from "./pages/InvestStep2";
 import InvestStep3 from "./pages/InvestStep3";
 import InvestStep4 from "./pages/InvestStep4";
 import { ToastContainer } from "react-toastify";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminPropertyForm from "./pages/AddProperty";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +42,8 @@ const App = () => (
         <Route path="/invest/checkout" element={<InvestStep4 />} />
           <Route path="/property/:id" element={<PropertyDetail />} />
           <Route path="/dashboard/:id" element={<Dashboard />} />
+          <Route path="/admindashboard" element={<AdminDashboard />} />
+          <Route path="/addproperty" element={<AdminPropertyForm />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

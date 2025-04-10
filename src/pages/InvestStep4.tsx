@@ -34,7 +34,7 @@ const InvestStep4 = () => {
     setError(null);
 
     try {
-      const response = await fetch("http://51.79.146.251:5000/api/properties/buyShares", {
+      const response = await fetch("http://localhost:5000/api/properties/buyShares", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
