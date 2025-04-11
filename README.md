@@ -1,22 +1,22 @@
-# Welcome to your Lovable project
+# Welcome to your spaceXec project
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/f7bea12e-411b-4abe-8348-cd8898d8ce3a
+**URL**: https://spaceXec.dev/projects/f7bea12e-411b-4abe-8348-cd8898d8ce3a
 
 ## How can I edit this code?
 
 There are several ways of editing your application.
 
-**Use Lovable**
+**Use spaceXec**
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/f7bea12e-411b-4abe-8348-cd8898d8ce3a) and start prompting.
+Simply visit the [spaceXec Project](https://spaceXec.dev/projects/f7bea12e-411b-4abe-8348-cd8898d8ce3a) and start prompting.
 
-Changes made via Lovable will be committed automatically to this repo.
+Changes made via spaceXec will be committed automatically to this repo.
 
 **Use your preferred IDE**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in spaceXec.
 
 The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
@@ -62,8 +62,8 @@ This project is built with .
 
 ## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/f7bea12e-411b-4abe-8348-cd8898d8ce3a) and click on Share -> Publish.
+Simply open [spaceXec](https://spaceXec.dev/projects/f7bea12e-411b-4abe-8348-cd8898d8ce3a) and click on Share -> Publish.
 
 ## I want to use a custom domain - is that possible?
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.spaceXec.dev/tips-tricks/custom-domain/)
