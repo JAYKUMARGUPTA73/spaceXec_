@@ -234,7 +234,7 @@ const PropertyDetail = () => {
               <div className="text-right">
                 <p className="text-sm text-gray-500">Property Value</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  ₹{propertyData.price.toLocaleString()}
+                  ₹{propertyData.price}
                 </p>
               </div>
               <div className="mt-4 flex gap-2 justify-end">
@@ -478,7 +478,7 @@ const PropertyDetail = () => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                               ₹
-                              {propertyData.financials.propertyPrice.toLocaleString()}
+                              {propertyData.financials.propertyPrice}
                             </td>
                           </tr>
                           <tr>
@@ -487,7 +487,7 @@ const PropertyDetail = () => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                               ₹
-                              {propertyData.financials.stampDuty.toLocaleString()}
+                              {propertyData.financials.stampDuty}
                             </td>
                           </tr>
                           <tr>
@@ -496,7 +496,7 @@ const PropertyDetail = () => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                               ₹
-                              {propertyData.financials.registrationFee.toLocaleString()}
+                              {propertyData.financials.registrationFee}
                             </td>
                           </tr>
                           <tr>
@@ -505,7 +505,7 @@ const PropertyDetail = () => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                               ₹
-                              {propertyData.financials.legalFee.toLocaleString()}
+                              {propertyData.financials.legalFee}
                             </td>
                           </tr>
                           <tr className="bg-gray-50">
@@ -514,7 +514,7 @@ const PropertyDetail = () => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
                               ₹
-                              {propertyData.financials.totalInvestment.toLocaleString()}
+                              {propertyData.financials.totalInvestment}
                             </td>
                           </tr>
                         </tbody>
@@ -614,7 +614,7 @@ const PropertyDetail = () => {
                         </span>
                         <span className="font-medium">
                           ₹
-                          {propertyData.offeringDetails.minInvestment.toLocaleString()}
+                          {propertyData.offeringDetails.minInvestment}
                         </span>
                       </div>
                       <div className="flex flex-col rounded-md bg-gray-50 p-3">
@@ -623,7 +623,7 @@ const PropertyDetail = () => {
                         </span>
                         <span className="font-medium">
                           ₹
-                          {propertyData.offeringDetails.maxInvestment.toLocaleString()}
+                          {propertyData.offeringDetails.maxInvestment}
                         </span>
                       </div>
                       <div className="flex flex-col rounded-md bg-gray-50 p-3">

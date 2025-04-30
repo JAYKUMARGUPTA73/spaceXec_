@@ -20,6 +20,12 @@ import InvestStep4 from "./pages/InvestStep4";
 import { ToastContainer } from "react-toastify";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminPropertyForm from "./pages/AddProperty";
+import VendorDashboard from "./pages/VendorDashboard";
+import ChatBox from "./pages/ChatContainer";
+import ChatButton from "./pages/Chatboxbottom";
+import SellNFTPage from "./pages/sellNft";
+import LuxuryPropertyMarketplace from "./pages/MarketPlace";
+import Footer from "./components/layout/Footer";
 
 const queryClient = new QueryClient();
 
@@ -42,11 +48,17 @@ const App = () => (
         <Route path="/invest/checkout" element={<InvestStep4 />} />
           <Route path="/property/:id" element={<PropertyDetail />} />
           <Route path="/dashboard/:id" element={<Dashboard />} />
+          <Route path="/chatbox" element={<ChatBox/>} />
+          <Route path="/sell/:id" element={<SellNFTPage />} />
           <Route path="/admindashboard" element={<AdminDashboard />} />
+          <Route path="/vendordashboard" element={<VendorDashboard />} />
           <Route path="/addproperty" element={<AdminPropertyForm />} />
+          <Route path="/marketplace" element={<LuxuryPropertyMarketplace />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <Footer/>
+        <ChatButton/>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

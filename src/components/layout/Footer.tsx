@@ -4,31 +4,31 @@ import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from 'luc
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-50">
+    <footer className="bg-gray-200">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Company Info */}
           <div className="lg:col-span-2">
-            <Link to="/" className="inline-block">
-              <span className="text-xl font-semibold tracking-tight">PropertyShare</span>
+            <Link to="/" className="text-2xl font-bold inline-block">
+            Space<span className="text-red-600">X</span>ec
             </Link>
             <p className="mt-4 text-sm text-gray-600 max-w-md">
               Transforming real estate investment through fractional ownership. Access premium properties with minimal investment.
             </p>
             <div className="mt-6 flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-primary transition-colors">
+              <a href="#" className="text-gray-400 hover:text-yellow-700 transition-colors">
                 <span className="sr-only">Facebook</span>
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-primary transition-colors">
+              <a href="#" className="text-gray-400 hover:text-yellow-700  transition-colors">
                 <span className="sr-only">Twitter</span>
                 <Twitter className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-primary transition-colors">
+              <a href="#" className="text-gray-400 hover:text-yellow-700 transition-colors">
                 <span className="sr-only">Instagram</span>
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-primary transition-colors">
+              <a href="#" className="text-gray-400 hover:text-yellow-700  transition-colors">
                 <span className="sr-only">LinkedIn</span>
                 <Linkedin className="h-5 w-5" />
               </a>

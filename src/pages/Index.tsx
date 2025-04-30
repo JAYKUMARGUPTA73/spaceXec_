@@ -17,7 +17,6 @@ const Index = () => {
       {/* <FeaturedProperties /> */}
       <HowItWorks />
       <ValueProposition />
-      <Footer />
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </div>
   );

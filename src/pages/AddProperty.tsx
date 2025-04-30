@@ -1,13 +1,15 @@
-import React, { useState, useRef, ChangeEvent, FormEvent } from 'react';
-import axios from 'axios';
-import { toast } from 'react-toastify';
+import React, { useState, useRef, ChangeEvent, FormEvent, useEffect } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { json } from "stream/consumers";
 
-// TypeScript interfaces
+
 interface VendorInfo {
+  // Define the structure for vendor information
   name: string;
-  phone: string;
+  contact: string;
   email: string;
-  website?: string;
+  address: string;
 }
 
 interface PropertyFormData {
@@ -16,13 +18,12 @@ interface PropertyFormData {
   location: string;
   description: string;
   type: string;
-  price: number;
   yield: number;
   totalShares: number;
   availableShares: number;
   pricePerShare: number;
   totalValue: number;
-  images: string[];
+  images: string[]; // Array of image URLs or base64 strings
   documents: {
     name: string;
     url?: string;
@@ -31,86 +32,108 @@ interface PropertyFormData {
   }[];
   bedrooms: number;
   bathrooms: number;
-  area: number;
-  amenities: string[];
+  area: number; // Square footage or area of the property
+  amenities: string[]; // Array of amenities (e.g., 'Pool', 'Gym')
   fundingGoal: number;
   fundingRaised: number;
   vendorInfo: VendorInfo;
-  legalInfo: string;
-  riskFactors: string[];
+  legalInfo: string; // Legal information regarding the property
+  riskFactors: string[]; // Array of potential risks
   return: {
-    projected: number;
-    historical?: number;
-  };
+    rental: number,
+    appreciation:number,
+    total: number,
+}, 
   financials: {
-    rentalIncome: number;
-    operatingExpenses: number;
-    netOperatingIncome: number;
-    capRate: number;
+    propertyPrice: number; // Price of the property
+    stampDuty: number; // Stamp duty fees
+    registrationFee: number; // Registration fees
+    legalFee: number; // Legal fees
+    totalInvestment: number; // Total investment required
+    expectedRentalYield: number; // Expected rental yield percentage (e.g., 6% or 0.06)
+    expectedAppreciation: number; // Expected appreciation percentage (e.g., 5% or 0.05)
+    projectedReturn: number; // Projected return based on investment
   };
   offeringDetails: {
-    minimumInvestment: number;
-    holdingPeriod: number;
-    distributionFrequency: string;
+    minInvestment: number; // Minimum investment required
+    holdingPeriod: number; // Investment holding period in years
+    distributionFrequency: string; // Frequency of distributions (e.g., 'Quarterly', 'Annually')
   };
 }
+
+type FormDataType = {
+  title: string;
+  description: string;
+  price: number;
+  location: string;
+  images: string[]; // Uploaded image URLs
+  // other fields...
+};
 
 const AdminPropertyForm: React.FC = () => {
   // Initial form state
   const initialFormState: PropertyFormData = {
-    name: '',
-    title: '',
-    location: '',
-    description: '',
-    type: 'residential',
-    price: 0,
+    name: "",
+    title: "",
+    location: "",
+    description: "",
+    type: "residential", // Default type for property
     yield: 0,
     totalShares: 100,
     availableShares: 100,
     pricePerShare: 0,
     totalValue: 0,
     images: [],
-    documents: [],
+    documents: [], // Empty array to hold documents later
     bedrooms: 0,
     bathrooms: 0,
-    area: 0,
-    amenities: [],
+    area: 0, // Square footage or area of the property
+    amenities: [], // Array for storing amenities (e.g., 'Pool', 'Gym')
     fundingGoal: 0,
     fundingRaised: 0,
     vendorInfo: {
-      name: '',
-      phone: '',
-      email: '',
-      website: ''
+      name: "",
+      contact: "", // Assuming 'contact' instead of 'phone' for flexibility
+      email: "",
+      address: "", // Adding 'address' as a part of vendor info
     },
-    legalInfo: '',
-    riskFactors: [''],
+    legalInfo: "",
+    riskFactors: [""], // Default empty string array for risk factors
     return: {
-      projected: 0,
-      historical: 0
+      rental: 0,
+      appreciation:0,
+      total: 0,// Including historical return as 0 initially
     },
     financials: {
-      rentalIncome: 0,
-      operatingExpenses: 0,
-      netOperatingIncome: 0,
-      capRate: 0
+      propertyPrice: 0, // Corrected to match the PropertyFormData structure
+      stampDuty: 0,
+      registrationFee: 0,
+      legalFee: 0,
+      totalInvestment: 0,
+      expectedRentalYield: 0,
+      expectedAppreciation: 0,
+      projectedReturn: 0,
     },
     offeringDetails: {
-      minimumInvestment: 0,
+      minInvestment: 0,
       holdingPeriod: 0,
-      distributionFrequency: 'monthly'
-    }
+      distributionFrequency: "monthly", // Default to 'monthly'
+    },
   };
-
+  
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [formData, setFormData] = useState<PropertyFormData>(initialFormState);
   const [loading, setLoading] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<string>('basic');
-  const [newAmenity, setNewAmenity] = useState<string>('');
-  const [newRiskFactor, setNewRiskFactor] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<string>("basic");
+  const [newAmenity, setNewAmenity] = useState<string>("");
+  const [newRiskFactor, setNewRiskFactor] = useState<string>("");
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const documentInputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    console.log(formData);
+  }, [formData]);
   // Image preview state
   const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
 
@@ -120,23 +143,25 @@ const AdminPropertyForm: React.FC = () => {
   };
 
   // Handle text input changes
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    
+
     // Handle nested fields
-    if (name.includes('.')) {
-      const [parent, child] = name.split('.');
-      setFormData(prev => ({
+    if (name.includes(".")) {
+      const [parent, child] = name.split(".");
+      setFormData((prev) => ({
         ...prev,
         [parent]: {
           ...prev[parent as keyof typeof prev],
-          [child]: value
-        }
+          [child]: value,
+        },
       }));
     } else {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        [name]: value
+        [name]: value,
       }));
     }
   };
@@ -144,200 +169,234 @@ const AdminPropertyForm: React.FC = () => {
   // Handle number input changes
   const handleNumberChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
+
     // Handle nested fields
-    if (name.includes('.')) {
-      const [parent, child] = name.split('.');
-      setFormData(prev => ({
+    if (name.includes(".")) {
+      const [parent, child] = name.split(".");
+      setFormData((prev) => ({
         ...prev,
         [parent]: {
           ...prev[parent as keyof typeof prev],
-          [child]: parseFloat(value) || 0
-        }
+          [child]: parseFloat(value) || 0,
+        },
       }));
     } else {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        [name]: parseFloat(value) || 0
+        [name]: parseFloat(value) || 0,
       }));
     }
   };
 
   // Handle image uploads
-  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const filesArray = Array.from(e.target.files);
-      const newImagePreviews: string[] = [];
-      
-      const imagePromises = filesArray.map(file => {
-        return new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onload = () => {
-            if (reader.result) {
-              newImagePreviews.push(reader.result.toString());
-              resolve(reader.result.toString());
-            }
-          };
-          reader.readAsDataURL(file);
-        });
+  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+
+    const formData = new FormData();
+    Array.from(e.target.files).forEach((file) => {
+      formData.append("files", file);
+    });
+
+    try {
+      const baseUrl =
+        process.env.NODE_ENV === "production"
+          ? process.env.NEXT_PUBLIC_BACKEND_URL
+          : "http://localhost:5000";
+
+      const res = await fetch(`${baseUrl}/api/properties/uploadimages`, {
+        method: "POST",
+        body: formData,
       });
 
-      Promise.all(imagePromises).then(base64Images => {
-        setFormData(prev => ({
-          ...prev,
-          images: [...prev.images, ...base64Images]
-        }));
-        setImagePreviewUrls(prev => [...prev, ...newImagePreviews]);
-      });
+      const data = await res.json();
+
+      setFormData((prev) => ({
+        ...prev,
+        images: [...prev.images, ...data.urls],
+      }));
+      console.log(formData);
+
+
+      setImagePreviewUrls((prev) => [...prev, ...data.urls]);
+    } catch (error) {
+      console.error("Upload error:", error);
     }
   };
 
-  // Handle document uploads
-  const handleDocumentUpload = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleDocumentUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const filesArray = Array.from(e.target.files);
-      
-      const documentPromises = filesArray.map(file => {
-        return new Promise<{ name: string; type: string; content: string | ArrayBuffer | null }>((resolve) => {
-          const reader = new FileReader();
-          reader.onload = () => {
-            resolve({
-              name: file.name,
-              type: file.type,
-              content: reader.result
-            });
-          };
-          reader.readAsDataURL(file);
+      const formData = new FormData();
+  
+      // Append files to FormData
+      Array.from(e.target.files).forEach((file) => {
+        formData.append("documents", file); // 'documents' should match the backend field
+      });
+  
+      try {
+        // Determine the base URL for the backend
+        const baseUrl =
+          process.env.NODE_ENV === "production"
+            ? process.env.NEXT_PUBLIC_BACKEND_URL
+            : "http://localhost:5000";
+  
+        // Make the POST request to upload the documents
+        const response = await fetch(`${baseUrl}/api/properties/uploadpdfs`, {
+          method: "POST",
+          body: formData,
         });
-      });
-
-      Promise.all(documentPromises).then(documents => {
-        setFormData(prev => ({
+  
+        // Check if the response is OK
+        if (!response.ok) {
+          throw new Error("Failed to upload documents");
+        }
+  
+        // Parse the JSON response
+        const data = await response.json();
+        // console.log(data)
+  
+        // Update the formData state with the document URLs
+        setFormData((prev) => ({
           ...prev,
-          documents: [...prev.documents, ...documents]
+          documents: [...prev.documents, ...data.urls], // Assuming the response contains URLs of uploaded documents
         }));
-      });
+        console.log(formData);
+      } catch (error) {
+        console.error("Document upload failed:", error);
+      }
     }
   };
+  
 
   // Add amenity
   const handleAddAmenity = () => {
     if (newAmenity.trim()) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        amenities: [...prev.amenities, newAmenity.trim()]
+        amenities: [...prev.amenities, newAmenity.trim()],
       }));
-      setNewAmenity('');
+      setNewAmenity("");
     }
   };
 
   // Remove amenity
   const handleRemoveAmenity = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      amenities: prev.amenities.filter((_, i) => i !== index)
+      amenities: prev.amenities.filter((_, i) => i !== index),
     }));
   };
 
   // Add risk factor
   const handleAddRiskFactor = () => {
     if (newRiskFactor.trim()) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        riskFactors: [...prev.riskFactors, newRiskFactor.trim()]
+        riskFactors: [...prev.riskFactors, newRiskFactor.trim()],
       }));
-      setNewRiskFactor('');
+      setNewRiskFactor("");
     }
   };
 
   // Remove risk factor
   const handleRemoveRiskFactor = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      riskFactors: prev.riskFactors.filter((_, i) => i !== index)
+      riskFactors: prev.riskFactors.filter((_, i) => i !== index),
     }));
   };
 
   // Remove document
   const handleRemoveDocument = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      documents: prev.documents.filter((_, i) => i !== index)
+      documents: prev.documents.filter((_, i) => i !== index),
     }));
   };
 
   // Remove image
   const handleRemoveImage = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      images: prev.images.filter((_, i) => i !== index)
+      images: prev.images.filter((_, i) => i !== index),
     }));
-    setImagePreviewUrls(prev => prev.filter((_, i) => i !== index));
+    setImagePreviewUrls((prev) => prev.filter((_, i) => i !== index));
   };
 
   // Calculate derived fields
   const calculateDerivedFields = () => {
     // Calculate price per share
-    const pricePerShare = formData.totalValue / formData.totalShares;
-    
-    // Calculate net operating income
-    const netOperatingIncome = formData.financials.rentalIncome - formData.financials.operatingExpenses;
-    
+    const pricePerShare = formData.financials.propertyPrice / formData.totalShares;
+  
+    // Calculate net operating income based on rental yield and property price
+    const netOperatingIncome =
+      (formData.financials.expectedRentalYield / 100) * formData.financials.propertyPrice;
+  
     // Calculate cap rate
-    const capRate = formData.totalValue > 0 ? (netOperatingIncome / formData.totalValue) * 100 : 0;
-    
-    setFormData(prev => ({
+    const capRate =
+      formData.financials.propertyPrice > 0
+        ? (netOperatingIncome / formData.financials.propertyPrice) * 100
+        : 0;
+  
+    // Update the formData state with calculated fields
+    setFormData((prev) => ({
       ...prev,
       pricePerShare,
       financials: {
         ...prev.financials,
         netOperatingIncome,
-        capRate
-      }
+        capRate,
+      },
     }));
   };
+  
 
   // Handle form submission
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
-      // Fetch token from local storage or auth context
-      const token = localStorage.getItem('token');
-      
+      const token = localStorage.getItem("token");
+
       if (!token) {
-        toast.error('Authentication error. Please login again.');
+        toast.error("Authentication error. Please login again.");
         setLoading(false);
         return;
       }
 
-      // Submit the form data
-      const response = await axios.post(
-        '/api/properties/admin/add', 
-        formData,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          onUploadProgress: (progressEvent) => {
-            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total!);
-            setUploadProgress(percentCompleted);
-          }
-        }
-      );
+     
 
-      if (response.status === 201) {
-        toast.success('Property added successfully');
-        // Reset form or redirect to property list
-        setFormData(initialFormState);
-        setImagePreviewUrls([]);
+      const baseUrl =
+      process.env.NODE_ENV === "production"
+        ? process.env.NEXT_PUBLIC_BACKEND_URL
+        : "http://localhost:5000";
+
+     
+
+      const submitRes = await fetch(`${baseUrl}/api/properties/addbyadmin`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body:JSON.stringify(formData),
+      });
+
+      const submitData = await submitRes.json();
+
+      if (submitRes.status === 201) {
+        toast.success("Property added successfully");
+        setFormData(initialFormState); // Reset form
+        setImageFiles([]); // Reset uploaded files
+        setImagePreviewUrls([]); // Reset previews
         setUploadProgress(0);
+      } else {
+        toast.error(submitData.message || "Failed to add property");
       }
-    } catch (error) {
-      console.error('Error adding property:', error);
-      toast.error('Failed to add property. Please try again.');
+    } catch (error: any) {
+      console.error("Error adding property:", error);
+      toast.error("Failed to add property. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -346,48 +405,70 @@ const AdminPropertyForm: React.FC = () => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg">
       <h1 className="text-2xl font-bold mb-6">Add New Property</h1>
-      
+
       {/* Form tabs */}
       <div className="flex mb-6 border-b">
         <button
-          className={`px-4 py-2 ${activeTab === 'basic' ? 'border-b-2 border-blue-500 font-medium' : ''}`}
-          onClick={() => handleTabChange('basic')}
+          className={`px-4 py-2 ${
+            activeTab === "basic"
+              ? "border-b-2 border-blue-500 font-medium"
+              : ""
+          }`}
+          onClick={() => handleTabChange("basic")}
         >
           Basic Info
         </button>
         <button
-          className={`px-4 py-2 ${activeTab === 'media' ? 'border-b-2 border-blue-500 font-medium' : ''}`}
-          onClick={() => handleTabChange('media')}
+          className={`px-4 py-2 ${
+            activeTab === "media"
+              ? "border-b-2 border-blue-500 font-medium"
+              : ""
+          }`}
+          onClick={() => handleTabChange("media")}
         >
           Media
         </button>
         <button
-          className={`px-4 py-2 ${activeTab === 'features' ? 'border-b-2 border-blue-500 font-medium' : ''}`}
-          onClick={() => handleTabChange('features')}
+          className={`px-4 py-2 ${
+            activeTab === "features"
+              ? "border-b-2 border-blue-500 font-medium"
+              : ""
+          }`}
+          onClick={() => handleTabChange("features")}
         >
           Features & Amenities
         </button>
         <button
-          className={`px-4 py-2 ${activeTab === 'financial' ? 'border-b-2 border-blue-500 font-medium' : ''}`}
-          onClick={() => handleTabChange('financial')}
+          className={`px-4 py-2 ${
+            activeTab === "financial"
+              ? "border-b-2 border-blue-500 font-medium"
+              : ""
+          }`}
+          onClick={() => handleTabChange("financial")}
         >
           Financial Details
         </button>
         <button
-          className={`px-4 py-2 ${activeTab === 'legal' ? 'border-b-2 border-blue-500 font-medium' : ''}`}
-          onClick={() => handleTabChange('legal')}
+          className={`px-4 py-2 ${
+            activeTab === "legal"
+              ? "border-b-2 border-blue-500 font-medium"
+              : ""
+          }`}
+          onClick={() => handleTabChange("legal")}
         >
           Legal & Risk
         </button>
       </div>
-      
+
       <form onSubmit={handleSubmit}>
         {/* Basic Info Tab */}
-        {activeTab === 'basic' && (
+        {activeTab === "basic" && (
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Property Name</label>
+                <label className="block text-sm font-medium mb-1">
+                  Property Name
+                </label>
                 <input
                   type="text"
                   name="name"
@@ -398,7 +479,9 @@ const AdminPropertyForm: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Title/Headline</label>
+                <label className="block text-sm font-medium mb-1">
+                  Title/Headline
+                </label>
                 <input
                   type="text"
                   name="title"
@@ -409,7 +492,7 @@ const AdminPropertyForm: React.FC = () => {
                 />
               </div>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium mb-1">Location</label>
               <input
@@ -421,9 +504,11 @@ const AdminPropertyForm: React.FC = () => {
                 required
               />
             </div>
-            
+
             <div>
-              <label className="block text-sm font-medium mb-1">Description</label>
+              <label className="block text-sm font-medium mb-1">
+                Description
+              </label>
               <textarea
                 name="description"
                 value={formData.description}
@@ -433,10 +518,12 @@ const AdminPropertyForm: React.FC = () => {
                 required
               />
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Property Type</label>
+                <label className="block text-sm font-medium mb-1">
+                  Property Type
+                </label>
                 <select
                   name="type"
                   value={formData.type}
@@ -452,7 +539,9 @@ const AdminPropertyForm: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Price ($)</label>
+                <label className="block text-sm font-medium mb-1">
+                  Price ($)
+                </label>
                 <input
                   type="number"
                   name="price"
@@ -464,7 +553,9 @@ const AdminPropertyForm: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Yield (%)</label>
+                <label className="block text-sm font-medium mb-1">
+                  Yield (%)
+                </label>
                 <input
                   type="number"
                   name="yield"
@@ -479,12 +570,14 @@ const AdminPropertyForm: React.FC = () => {
             </div>
           </div>
         )}
-        
+
         {/* Media Tab */}
-        {activeTab === 'media' && (
+        {activeTab === "media" && (
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium mb-2">Property Images</label>
+              <label className="block text-sm font-medium mb-2">
+                Property Images
+              </label>
               <div className="flex items-center">
                 <button
                   type="button"
@@ -501,9 +594,11 @@ const AdminPropertyForm: React.FC = () => {
                   multiple
                   accept="image/*"
                 />
-                <span className="ml-2 text-sm text-gray-500">Supported formats: JPG, PNG, WebP</span>
+                <span className="ml-2 text-sm text-gray-500">
+                  Supported formats: JPG, PNG, WebP
+                </span>
               </div>
-              
+
               {/* Image previews */}
               {imagePreviewUrls.length > 0 && (
                 <div className="mt-4">
@@ -529,9 +624,11 @@ const AdminPropertyForm: React.FC = () => {
                 </div>
               )}
             </div>
-            
+
             <div>
-              <label className="block text-sm font-medium mb-2">Property Documents</label>
+              <label className="block text-sm font-medium mb-2">
+                Property Documents
+              </label>
               <div className="flex items-center">
                 <button
                   type="button"
@@ -548,17 +645,49 @@ const AdminPropertyForm: React.FC = () => {
                   multiple
                   accept=".pdf,.docx,.xlsx"
                 />
-                <span className="ml-2 text-sm text-gray-500">Supported formats: PDF, DOCX, XLSX</span>
+                {/* <iframe src="https://res.cloudinary.com/dtucbqemb/image/upload/v1745825721/realstate-pdfs/e02xdd6m2eabdv80pzy5.pdf" width="600" height="400"></iframe> */}
+
+                <span className="ml-2 text-sm text-gray-500">
+                  Supported formats: PDF, DOCX, XLSX
+                </span>
               </div>
-              
+
               {/* Document list */}
               {formData.documents.length > 0 && (
                 <div className="mt-4">
-                  <h3 className="text-sm font-medium mb-2">Uploaded Documents</h3>
+                  <h3 className="text-sm font-medium mb-2">
+                    Uploaded Documents
+                  </h3>
                   <div className="space-y-2">
                     {formData.documents.map((doc, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                        <span>{doc.name}</span>
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-2 bg-gray-50 rounded"
+                      >
+                        <div className="flex flex-col">
+                          {/* Document name */}
+
+                          {/* PDF Preview */}
+                          <embed
+                            src={doc}
+                            width="600"
+                            height="200"
+                            type="application/pdf"
+                            className="mt-2"
+                          />
+
+                          {/* Link to open the document in a new tab */}
+                          <a
+                            href={doc}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-500 hover:text-blue-700 mt-2"
+                          >
+                            View Document
+                          </a>
+                        </div>
+
+                        {/* Button to remove document */}
                         <button
                           type="button"
                           onClick={() => handleRemoveDocument(index)}
@@ -574,13 +703,15 @@ const AdminPropertyForm: React.FC = () => {
             </div>
           </div>
         )}
-        
+
         {/* Features & Amenities Tab */}
-        {activeTab === 'features' && (
+        {activeTab === "features" && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Bedrooms</label>
+                <label className="block text-sm font-medium mb-1">
+                  Bedrooms
+                </label>
                 <input
                   type="number"
                   name="bedrooms"
@@ -592,7 +723,9 @@ const AdminPropertyForm: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Bathrooms</label>
+                <label className="block text-sm font-medium mb-1">
+                  Bathrooms
+                </label>
                 <input
                   type="number"
                   name="bathrooms"
@@ -605,7 +738,9 @@ const AdminPropertyForm: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Area (sq ft)</label>
+                <label className="block text-sm font-medium mb-1">
+                  Area (sq ft)
+                </label>
                 <input
                   type="number"
                   name="area"
@@ -617,9 +752,11 @@ const AdminPropertyForm: React.FC = () => {
                 />
               </div>
             </div>
-            
+
             <div>
-              <label className="block text-sm font-medium mb-2">Amenities</label>
+              <label className="block text-sm font-medium mb-2">
+                Amenities
+              </label>
               <div className="flex">
                 <input
                   type="text"
@@ -636,7 +773,7 @@ const AdminPropertyForm: React.FC = () => {
                   Add
                 </button>
               </div>
-              
+
               {/* Amenities list */}
               {formData.amenities.length > 0 && (
                 <div className="mt-4">
@@ -663,13 +800,15 @@ const AdminPropertyForm: React.FC = () => {
             </div>
           </div>
         )}
-        
+
         {/* Financial Details Tab */}
-        {activeTab === 'financial' && (
+        {activeTab === "financial" && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Total Value ($)</label>
+                <label className="block text-sm font-medium mb-1">
+                  Total Value ($)
+                </label>
                 <input
                   type="number"
                   name="totalValue"
@@ -682,7 +821,9 @@ const AdminPropertyForm: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Total Shares</label>
+                <label className="block text-sm font-medium mb-1">
+                  Total Shares
+                </label>
                 <input
                   type="number"
                   name="totalShares"
@@ -695,7 +836,9 @@ const AdminPropertyForm: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Available Shares</label>
+                <label className="block text-sm font-medium mb-1">
+                  Available Shares
+                </label>
                 <input
                   type="number"
                   name="availableShares"
@@ -708,7 +851,9 @@ const AdminPropertyForm: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Price Per Share ($)</label>
+                <label className="block text-sm font-medium mb-1">
+                  Price Per Share ($)
+                </label>
                 <input
                   type="number"
                   name="pricePerShare"
@@ -718,10 +863,12 @@ const AdminPropertyForm: React.FC = () => {
                 />
               </div>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Funding Goal ($)</label>
+                <label className="block text-sm font-medium mb-1">
+                  Funding Goal ($)
+                </label>
                 <input
                   type="number"
                   name="fundingGoal"
@@ -733,7 +880,9 @@ const AdminPropertyForm: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Funding Raised ($)</label>
+                <label className="block text-sm font-medium mb-1">
+                  Funding Raised ($)
+                </label>
                 <input
                   type="number"
                   name="fundingRaised"
@@ -746,16 +895,18 @@ const AdminPropertyForm: React.FC = () => {
                 />
               </div>
             </div>
-            
+
             <div>
               <h3 className="text-lg font-medium mb-2">Return Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Projected Return (%)</label>
+                  <label className="block text-sm font-medium mb-1">
+                  Total Return (%)
+                  </label>
                   <input
                     type="number"
-                    name="return.projected"
-                    value={formData.return.projected}
+                    name="return.rental"
+                    value={formData.return.total}
                     onChange={handleNumberChange}
                     className="w-full p-2 border rounded"
                     step="0.01"
@@ -764,11 +915,28 @@ const AdminPropertyForm: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Historical Return (%) (optional)</label>
+                  <label className="block text-sm font-medium mb-1">
+                  Appreciation Return (%) (optional)
+                  </label>
                   <input
                     type="number"
                     name="return.historical"
-                    value={formData.return.historical || 0}
+                    value={formData.return.appreciation || 0}
+                    onChange={handleNumberChange}
+                    className="w-full p-2 border rounded"
+                    step="0.01"
+                    min="0"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                  Rental Return (%) (optional)
+                  </label>
+                  <input
+                    type="number"
+                    name="return.historical"
+                    value={formData.return.rental || 0}
                     onChange={handleNumberChange}
                     className="w-full p-2 border rounded"
                     step="0.01"
@@ -777,68 +945,165 @@ const AdminPropertyForm: React.FC = () => {
                 </div>
               </div>
             </div>
-            
+
             <div>
-              <h3 className="text-lg font-medium mb-2">Financial Details</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Annual Rental Income ($)</label>
-                  <input
-                    type="number"
-                    name="financials.rentalIncome"
-                    value={formData.financials.rentalIncome}
-                    onChange={handleNumberChange}
-                    onBlur={calculateDerivedFields}
-                    className="w-full p-2 border rounded"
-                    min="0"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Operating Expenses ($)</label>
-                  <input
-                    type="number"
-                    name="financials.operatingExpenses"
-                    value={formData.financials.operatingExpenses}
-                    onChange={handleNumberChange}
-                    onBlur={calculateDerivedFields}
-                    className="w-full p-2 border rounded"
-                    min="0"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Net Operating Income ($)</label>
-                  <input
-                    type="number"
-                    name="financials.netOperatingIncome"
-                    value={formData.financials.netOperatingIncome}
-                    className="w-full p-2 border rounded bg-gray-100"
-                    readOnly
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Cap Rate (%)</label>
-                  <input
-                    type="number"
-                    name="financials.capRate"
-                    value={formData.financials.capRate}
-                    className="w-full p-2 border rounded bg-gray-100"
-                    readOnly
-                  />
-                </div>
-              </div>
-            </div>
-            
+  <h3 className="text-lg font-medium mb-2">Financial Details</h3>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    {/* Property Price */}
+    <div>
+      <label className="block text-sm font-medium mb-1">Property Price ($)</label>
+      <input
+        type="number"
+        name="financials.propertyPrice"
+        value={formData.financials.propertyPrice}
+        onChange={handleNumberChange}
+        onBlur={calculateDerivedFields}
+        className="w-full p-2 border rounded"
+        min="0"
+        required
+      />
+    </div>
+
+    {/* Stamp Duty */}
+    <div>
+      <label className="block text-sm font-medium mb-1">Stamp Duty ($)</label>
+      <input
+        type="number"
+        name="financials.stampDuty"
+        value={formData.financials.stampDuty}
+        onChange={handleNumberChange}
+        className="w-full p-2 border rounded"
+        min="0"
+        required
+      />
+    </div>
+
+    {/* Registration Fee */}
+    <div>
+      <label className="block text-sm font-medium mb-1">Registration Fee ($)</label>
+      <input
+        type="number"
+        name="financials.registrationFee"
+        value={formData.financials.registrationFee}
+        onChange={handleNumberChange}
+        className="w-full p-2 border rounded"
+        min="0"
+        required
+      />
+    </div>
+
+    {/* Legal Fee */}
+    <div>
+      <label className="block text-sm font-medium mb-1">Legal Fee ($)</label>
+      <input
+        type="number"
+        name="financials.legalFee"
+        value={formData.financials.legalFee}
+        onChange={handleNumberChange}
+        className="w-full p-2 border rounded"
+        min="0"
+        required
+      />
+    </div>
+
+    {/* Total Investment */}
+    <div>
+      <label className="block text-sm font-medium mb-1">Total Investment ($)</label>
+      <input
+        type="number"
+        name="financials.totalInvestment"
+        value={formData.financials.totalInvestment}
+        onChange={handleNumberChange}
+        onBlur={calculateDerivedFields}
+        className="w-full p-2 border rounded"
+        min="0"
+        required
+      />
+    </div>
+
+    {/* Expected Rental Yield */}
+    <div>
+      <label className="block text-sm font-medium mb-1">Expected Rental Yield (%)</label>
+      <input
+        type="number"
+        name="financials.expectedRentalYield"
+        value={formData.financials.expectedRentalYield}
+        onChange={handleNumberChange}
+        onBlur={calculateDerivedFields}
+        className="w-full p-2 border rounded"
+        min="0"
+        required
+      />
+    </div>
+
+    {/* Expected Appreciation */}
+    <div>
+      <label className="block text-sm font-medium mb-1">Expected Appreciation (%)</label>
+      <input
+        type="number"
+        name="financials.expectedAppreciation"
+        value={formData.financials.expectedAppreciation}
+        onChange={handleNumberChange}
+        onBlur={calculateDerivedFields}
+        className="w-full p-2 border rounded"
+        min="0"
+        required
+      />
+    </div>
+
+    {/* Projected Return */}
+    <div>
+      <label className="block text-sm font-medium mb-1">Projected Return (%)</label>
+      <input
+        type="number"
+        name="financials.projectedReturn"
+        value={formData.financials.projectedReturn}
+        onChange={handleNumberChange}
+        onBlur={calculateDerivedFields}
+        className="w-full p-2 border rounded"
+        min="0"
+        required
+      />
+    </div>
+
+    {/* Net Operating Income */}
+    <div>
+      <label className="block text-sm font-medium mb-1">Net Operating Income ($)</label>
+      <input
+        type="number"
+        name="financials.netOperatingIncome"
+        value={formData.financials.netOperatingIncome}
+        className="w-full p-2 border rounded bg-gray-100"
+        readOnly
+      />
+    </div>
+
+    {/* Cap Rate */}
+    <div>
+      <label className="block text-sm font-medium mb-1">Cap Rate (%)</label>
+      <input
+        type="number"
+        name="financials.capRate"
+        value={formData.financials.capRate}
+        className="w-full p-2 border rounded bg-gray-100"
+        readOnly
+      />
+    </div>
+  </div>
+</div>
+
+
             <div>
               <h3 className="text-lg font-medium mb-2">Offering Details</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Minimum Investment ($)</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Minimum Investment ($)
+                  </label>
                   <input
                     type="number"
-                    name="offeringDetails.minimumInvestment"
-                    value={formData.offeringDetails.minimumInvestment}
+                    name="offeringDetails.minInvestment"
+                    value={formData.offeringDetails.minInvestment}
                     onChange={handleNumberChange}
                     className="w-full p-2 border rounded"
                     min="0"
@@ -846,7 +1111,9 @@ const AdminPropertyForm: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Holding Period (months)</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Holding Period (months)
+                  </label>
                   <input
                     type="number"
                     name="offeringDetails.holdingPeriod"
@@ -858,7 +1125,9 @@ const AdminPropertyForm: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Distribution Frequency</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Distribution Frequency
+                  </label>
                   <select
                     name="offeringDetails.distributionFrequency"
                     value={formData.offeringDetails.distributionFrequency}
@@ -876,15 +1145,17 @@ const AdminPropertyForm: React.FC = () => {
             </div>
           </div>
         )}
-        
+
         {/* Legal & Risk Tab */}
-        {activeTab === 'legal' && (
+        {activeTab === "legal" && (
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-medium mb-2">Vendor Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Vendor Name</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Vendor Name
+                  </label>
                   <input
                     type="text"
                     name="vendorInfo.name"
@@ -895,7 +1166,9 @@ const AdminPropertyForm: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Vendor Phone</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Vendor Phone
+                  </label>
                   <input
                     type="text"
                     name="vendorInfo.phone"
@@ -906,7 +1179,9 @@ const AdminPropertyForm: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Vendor Email</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Vendor Email
+                  </label>
                   <input
                     type="email"
                     name="vendorInfo.email"
@@ -917,7 +1192,9 @@ const AdminPropertyForm: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Vendor Website (optional)</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Vendor Website (optional)
+                  </label>
                   <input
                     type="url"
                     name="vendorInfo.website"
@@ -928,9 +1205,11 @@ const AdminPropertyForm: React.FC = () => {
                 </div>
               </div>
             </div>
-            
+
             <div>
-              <label className="block text-sm font-medium mb-1">Legal Information</label>
+              <label className="block text-sm font-medium mb-1">
+                Legal Information
+              </label>
               <textarea
                 name="legalInfo"
                 value={formData.legalInfo}
@@ -940,9 +1219,11 @@ const AdminPropertyForm: React.FC = () => {
                 required
               />
             </div>
-            
+
             <div>
-              <label className="block text-sm font-medium mb-2">Risk Factors</label>
+              <label className="block text-sm font-medium mb-2">
+                Risk Factors
+              </label>
               <div className="flex">
                 <input
                   type="text"
@@ -959,11 +1240,13 @@ const AdminPropertyForm: React.FC = () => {
                   Add
                 </button>
               </div>
-              
+
               {/* Risk factors list */}
               {formData.riskFactors.length > 0 && (
                 <div className="mt-4">
-                  <h3 className="text-sm font-medium mb-2">Added Risk Factors</h3>
+                  <h3 className="text-sm font-medium mb-2">
+                    Added Risk Factors
+                  </h3>
                   <div className="space-y-2">
                     {formData.riskFactors.map((factor, index) => (
                       <div
@@ -986,7 +1269,7 @@ const AdminPropertyForm: React.FC = () => {
             </div>
           </div>
         )}
-        
+
         {/* Form actions */}
         <div className="mt-8 flex justify-between">
           <div className="flex items-center">
@@ -994,8 +1277,8 @@ const AdminPropertyForm: React.FC = () => {
               <div className="mr-4 w-full max-w-xs">
                 <div className="flex items-center">
                   <div className="w-full bg-gray-200 rounded-full h-2.5">
-                    <div 
-                      className="bg-blue-600 h-2.5 rounded-full" 
+                    <div
+                      className="bg-blue-600 h-2.5 rounded-full"
                       style={{ width: `${uploadProgress}%` }}
                     ></div>
                   </div>
@@ -1004,7 +1287,7 @@ const AdminPropertyForm: React.FC = () => {
               </div>
             )}
           </div>
-          
+
           <div className="flex space-x-4">
             <button
               type="button"
@@ -1019,7 +1302,7 @@ const AdminPropertyForm: React.FC = () => {
               className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-blue-300"
               disabled={loading}
             >
-              {loading ? 'Submitting...' : 'Add Property'}
+              {loading ? "Submitting..." : "Add Property"}
             </button>
           </div>
         </div>

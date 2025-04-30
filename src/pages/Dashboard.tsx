@@ -42,11 +42,8 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaMap, FaMapPin } from "react-icons/fa";
-
-
-
 
 const data_ = [
   { name: "Category A", value: 40 },
@@ -121,7 +118,7 @@ const user_d = {
       ownership: 0.2,
       returns: 3300,
       purchaseDate: "October 10, 2022",
-      nftToken:"iofuo8940923"
+      nftToken: "iofuo8940923",
     },
   ],
   // New wishlist properties
@@ -138,7 +135,6 @@ const user_d = {
       type: "Vacation",
       area: 2200,
       fundingPercentage: 78,
-
     },
     {
       id: "w2",
@@ -187,9 +183,9 @@ const user_d = {
       amount: 100000,
       type: "investment",
       property: "Luxury Apartment in South Delhi",
-      transaction_id:"lvjndsuf98qrrw0709",
-      propertyId:"akdfj983232",
-      Date:"sdfsd",
+      transaction_id: "lvjndsuf98qrrw0709",
+      propertyId: "akdfj983232",
+      Date: "sdfsd",
     },
     {
       id: "t2",
@@ -271,6 +267,7 @@ const user_d = {
 };
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
   const [wishlistView, setWishlistView] = useState("grid"); // 'grid' or 'tile'
   const [userId, setuserId] = useState("");
@@ -726,11 +723,15 @@ const Dashboard = () => {
                   <CardContent>
                     <div className="space-y-4">
                       {userData.transactions
-                        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                        .sort(
+                          (a, b) =>
+                            new Date(b.date).getTime() -
+                            new Date(a.date).getTime()
+                        )
                         // Sort by latest transaction
                         .slice(0, 50) // Get the first 50 transactions after sorting
                         .map((transaction) => {
-                          const property = transaction.propertyId; 
+                          const property = transaction.propertyId;
                           // Assuming propertyId is populated with the property data
 
                           return (
@@ -908,15 +909,18 @@ const Dashboard = () => {
                           </Button>
                         </Link>
 
-                        <Link to={`/sell/${property.id}`}>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            className="w-full px-8 bg-red-500 text-white hover:bg-red-600"
-                          >
-                            Sell
-                          </Button>
-                        </Link>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className="w-full px-8 bg-red-500 text-white hover:bg-red-600"
+                          onClick={() =>
+                            navigate(`/sell/${property.id}`, {
+                              state: property,
+                            })
+                          }
+                        >
+                          Sell
+                        </Button>
                       </div>
                     </div>
                   ))}
@@ -1050,7 +1054,7 @@ const Dashboard = () => {
                               to={`/property/${property.id}`}
                               className="w-full text-center bg-yellow-200 text-gray-700 font-semibold py-2 px-4  transition-all hover:text-gray-500 hover:bg-white shadow-md"
                             >
-                              Invest Now 
+                              Invest Now
                             </Link>
                           </div>
                         </div>

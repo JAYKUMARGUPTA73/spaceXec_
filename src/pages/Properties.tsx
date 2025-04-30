@@ -87,8 +87,8 @@ const Properties = () => {
   const location = useLocation();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
-  const [priceRange, setPriceRange] = useState([800000, 1200000]);
-  const [yieldRange, setYieldRange] = useState([6, 9]);
+  const [priceRange, setPriceRange] = useState([8, 1200000]);
+  const [yieldRange, setYieldRange] = useState([0, 9]);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);

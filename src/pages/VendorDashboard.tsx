@@ -50,27 +50,74 @@ import {
   Cell,
 } from "recharts";
 import {
-  FaBan,
   FaCheck,
-  FaCircleNotch,
   FaDashcube,
   FaEye,
   FaEyeSlash,
+  FaHeart,
   FaMale,
-  FaMinusCircle,
-  FaRegEye,
   FaSearch,
   FaSellcast,
   FaSign,
-  FaTrash,
   FaUserAstronaut,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; // Import toastify styles
-import ChatBox from "./ChatContainer";
 
-// Initialize toast container
+const propertiesHighlight_= [
+    {
+      id: "w1",
+      title: "Beachfront Villa in Goa",
+      location: "Calangute, Goa",
+      price: 35000000,
+      yield: 12.8,
+      minInvestment: 100000,
+      image:
+        "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      type: "Vacation",
+      area: 2200,
+      fundingPercentage: 78,
+
+    },
+    {
+      id: "w2",
+      title: "Office Space in Mumbai",
+      location: "Bandra Kurla Complex, Mumbai",
+      price: 42000000,
+      yield: 15.5,
+      minInvestment: 75000,
+      image:
+        "https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      type: "Commercial",
+      area: 1800,
+      fundingPercentage: 65,
+    },
+    {
+      id: "w3",
+      title: "Premium Apartment in Bangalore",
+      location: "Koramangala, Bangalore",
+      price: 18000000,
+      yield: 13.9,
+      minInvestment: 30000,
+      image:
+        "https://images.unsplash.com/photo-1493809842364-78817add7ffb?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      type: "Residential",
+      area: 1450,
+      fundingPercentage: 92,
+    },
+    {
+      id: "w4",
+      title: "Hill View Cottage in Mussoorie",
+      location: "Mussoorie, Uttarakhand",
+      price: 9500000,
+      yield: 11.8,
+      minInvestment: 15000,
+      image:
+        "https://images.unsplash.com/photo-1518780664697-55e3ad937233?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      type: "Vacation",
+      area: 950,
+      fundingPercentage: 45,
+    },
+  ];
 
 const ticket_ = [
   {
@@ -258,87 +305,27 @@ const vendors_ = [
     rating: 4.0,
   },
 ];
-const salesData = [
-  { month: "Jan", revenue: 845000, investments: 750000, properties: 12 },
-  { month: "Feb", revenue: 1025000, investments: 950000, properties: 15 },
-  { month: "Mar", revenue: 940000, investments: 880000, properties: 14 },
-  { month: "Apr", revenue: 1200000, investments: 1100000, properties: 18 },
-  { month: "May", revenue: 1350000, investments: 1250000, properties: 20 },
-  { month: "Jun", revenue: 1150000, investments: 1050000, properties: 17 },
-];
-const properties_ = [
-  {
-    id: "P-001",
-    title: "Luxury Apartment in South Delhi",
-    location: "Green Park, Delhi",
-    price: 15000000,
-    type: "Residential",
-    status: "active",
-    investors: 32,
-    fundingCompleted: 75,
-  },
-  {
-    id: "P-002",
-    title: "Commercial Space in Cyber City",
-    location: "Gurugram, Haryana",
-    price: 27500000,
-    type: "Commercial",
-    status: "active",
-    investors: 58,
-    fundingCompleted: 89,
-  },
-  {
-    id: "P-003",
-    title: "Vacation Home in Shimla",
-    location: "Shimla, Himachal Pradesh",
-    price: 12500000,
-    type: "Vacation",
-    status: "active",
-    investors: 27,
-    fundingCompleted: 65,
-  },
-  {
-    id: "P-004",
-    title: "Office Complex in Whitefield",
-    location: "Bangalore, Karnataka",
-    price: 35000000,
-    type: "Commercial",
-    status: "pending",
-    investors: 0,
-    fundingCompleted: 0,
-  },
-  {
-    id: "P-005",
-    title: "Beachfront Villa in Goa",
-    location: "Calangute, Goa",
-    price: 22000000,
-    type: "Vacation",
-    status: "disabled",
-    investors: 15,
-    fundingCompleted: 34,
-  },
-  {
-    id: "P-006",
-    title: "Retail Space in Lower Parel",
-    location: "Mumbai, Maharashtra",
-    price: 18500000,
-    type: "Commercial",
-    status: "active",
-    investors: 41,
-    fundingCompleted: 80,
-  },
-];
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
-const AdminDashboard = () => {
-  const [selectedTicketId, setSelectedTicketId] = useState("");
+const salesData_= [
+    { month: "Jan", revenue: 845000, income: 750000, salesCount: 12 },
+    { month: "Feb", revenue: 1025000, income: 950000, salesCount: 15 },
+    { month: "Mar", revenue: 940000, income: 880000, salesCount: 14 },
+    { month: "Apr", revenue: 1200000, income: 1100000, salesCount: 18 },
+    { month: "May", revenue: 1350000, income: 1250000, salesCount: 20 },
+    { month: "Jun", revenue: 1150000, income: 1050000, salesCount: 17 },
+  ];
+const VendorDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [tickets, setTickets] = useState(ticket_);
+  const [propertiesHighlight,setPropertyHighlights]=useState(propertiesHighlight_);
+  const [salesData,setSalesData]=useState(salesData_);
+  const [totalRevenue,setTotalRevenue]=useState("");
+  const [totalIncome,setTotalIncome]=useState("");
+  const [totalProperties,setTotalProperties]=useState("");
   const [propertyTypeData, setpropertyTypeData] = useState(property_);
   const [ticketFilter, setTicketFilter] = useState("all");
   const [propertyFilter, setPropertyFilter] = useState("all");
-  const [properties, setProperties] = useState(properties_);
   const [vendorFilter, setVendorFilter] = useState("all");
   const [profile, setProfile] = useState("");
   const [error, setError] = useState(null);
@@ -366,138 +353,75 @@ const AdminDashboard = () => {
   const [vendorList, setVendorList] = useState(vendors_);
 
   // Sample data for overview
+  
+
+  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
   // Sample data for tickets
 
   // Sample properties data
-  const openChatModel = (ticketId) => {
-    console.log("Opening chat model for ticket:", ticketId);
-    setSelectedTicketId(ticketId);
-  };
-
-  const getAuthToken = () => {
-    return localStorage.getItem("token"); // or whatever key you stored the token with
-  };
-
-  const handleDisableProperty = async (propertyId: string) => {
-    const userConfirmed = window.confirm(
-      "Are you sure you want to disable this property?"
-    );
-
-    if (!userConfirmed) {
-      return; // If user cancels, do nothing
-    }
-
-    try {
-      const token = getAuthToken();
-      const baseUrl =
-        process.env.NODE_ENV === "production"
-          ? process.env.NEXT_PUBLIC_BACKEND_URL
-          : "http://localhost:5000";
-
-      const res = await fetch(
-        `${baseUrl}/api/properties/disable/${propertyId}`,
-        {
-          method: "PUT", // PATCH for disabling
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          credentials: "include",
-        }
-      );
-
-      if (res.ok) {
-        toast.success("Property disabled successfully!");
-      } else {
-        toast.error("Failed to disable property!");
-      }
-    } catch (error) {
-      console.error("Error disabling property:", error);
-      toast.error("Error disabling property!");
-    }
-  };
-
-  // Delete Property
-  const handleDeleteProperty = async (propertyId: string) => {
-    const userConfirmed = window.confirm(
-      "Are you sure you want to delete this property?"
-    );
-
-    if (!userConfirmed) {
-      return; // If user cancels, do nothing
-    }
-
-    try {
-      const token = getAuthToken();
-      const baseUrl =
-        process.env.NODE_ENV === "production"
-          ? process.env.NEXT_PUBLIC_BACKEND_URL
-          : "http://localhost:5000";
-
-      const res = await fetch(
-        `${baseUrl}/api/properties/delete/${propertyId}`,
-        {
-          method: "DELETE", // DELETE for deleting
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          credentials: "include",
-        }
-      );
-      const data = await res.json(); // <--- Important: read the JSON body
-      console.log(data)
-      if (res.ok) {
-        toast.success(data.message || "Property approved successfully!");
-      } else {
-        toast.error(data.message || "Failed to approve property!");
-      }
-    } catch (error) {
-      console.error("Error deleting property:", error);
-      toast.error("Error deleting property!");
-    }
-  };
-
-  // Approve Property
-  const handleApproveProperty = async (propertyId: string) => {
-    const userConfirmed = window.confirm(
-      "Are you sure you want to approve this property?"
-    );
-
-    if (!userConfirmed) {
-      return; // If user cancels, do nothing
-    }
-
-    try {
-      const token = getAuthToken();
-      const baseUrl =
-        process.env.NODE_ENV === "production"
-          ? process.env.NEXT_PUBLIC_BACKEND_URL
-          : "http://localhost:5000";
-
-      const res = await fetch(
-        `${baseUrl}/api/properties/approve/${propertyId}`,
-        {
-          method: "PUT", // PATCH for approving
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          credentials: "include",
-        }
-      );
-
-      if (res.ok) {
-        toast.success("Property approved successfully!");
-      } else {
-        toast.error("Failed to approve property!");
-      }
-    } catch (error) {
-      console.error("Error approving property:", error);
-      toast.error("Error approving property!");
-    }
-  };
+  const properties = [
+    {
+      id: "P-001",
+      title: "Luxury Apartment in South Delhi",
+      location: "Green Park, Delhi",
+      price: 15000000,
+      type: "Residential",
+      status: "active",
+      investors: 32,
+      fundingCompleted: 75,
+    },
+    {
+      id: "P-002",
+      title: "Commercial Space in Cyber City",
+      location: "Gurugram, Haryana",
+      price: 27500000,
+      type: "Commercial",
+      status: "active",
+      investors: 58,
+      fundingCompleted: 89,
+    },
+    {
+      id: "P-003",
+      title: "Vacation Home in Shimla",
+      location: "Shimla, Himachal Pradesh",
+      price: 12500000,
+      type: "Vacation",
+      status: "active",
+      investors: 27,
+      fundingCompleted: 65,
+    },
+    {
+      id: "P-004",
+      title: "Office Complex in Whitefield",
+      location: "Bangalore, Karnataka",
+      price: 35000000,
+      type: "Commercial",
+      status: "pending",
+      investors: 0,
+      fundingCompleted: 0,
+    },
+    {
+      id: "P-005",
+      title: "Beachfront Villa in Goa",
+      location: "Calangute, Goa",
+      price: 22000000,
+      type: "Vacation",
+      status: "disabled",
+      investors: 15,
+      fundingCompleted: 34,
+    },
+    {
+      id: "P-006",
+      title: "Retail Space in Lower Parel",
+      location: "Mumbai, Maharashtra",
+      price: 18500000,
+      type: "Commercial",
+      status: "active",
+      investors: 41,
+      fundingCompleted: 80,
+    },
+  ];
 
   useEffect(() => {
     const fetchAdminDashboardData = async () => {
@@ -505,8 +429,8 @@ const AdminDashboard = () => {
         const pro_ = localStorage.getItem("profile_pic");
         setProfile(pro_);
 
-        const id = localStorage.getItem("_id");
-        if (!id) {
+        const vendorId = localStorage.getItem("_id");
+        if (!vendorId) {
           throw new Error("User ID not found in localStorage");
         }
 
@@ -515,18 +439,25 @@ const AdminDashboard = () => {
             ? process.env.NEXT_PUBLIC_BACKEND_URL
             : "http://localhost:5000";
 
-        const response = await fetch(`${baseUrl}/api/users/admindashboard`, {
+        const response = await fetch(`${baseUrl}/api/users/vendordashboard/${vendorId}`, {
           method: "POST",
         });
 
         const data = await response.json();
+        console.log(data)
+
 
         if (!response.ok) {
           throw new Error(`Error: ${response.status} ${response.statusText}`);
         }
+        setPropertyHighlights(data.listings)
+        setSalesData(data.salesSummary)
+        setTotalIncome(data.totalIncome)
+        setTotalProperties(data.totalProperties)
+        setTotalRevenue(data.totalRevenue)
 
-        setTickets(data.support_tickets);
-        setAdminParams(data.admin_params);
+        // setTickets(data.support_tickets);
+        // setAdminParams(data.admin_params);
 
         // Format pie chart data
         // console.log(data.admin_params);
@@ -540,7 +471,7 @@ const AdminDashboard = () => {
         console.log(data);
 
         // When you receive the data
-        setpropertyTypeData(formatChartData(data.formatted_pie));
+        // setpropertyTypeData(formatChartData(data.formatted_pie));
 
         // console.log(formatChartData(data.formatted_pie))
       } catch (err) {
@@ -573,31 +504,6 @@ const AdminDashboard = () => {
       }
 
       setUserList(data);
-      console.log(data);
-    } catch (err) {
-      setError(err.message);
-      console.error("Failed to fetch dashboard data:", err);
-    }
-  };
-
-  const fetchAllProperties = async () => {
-    try {
-      const baseUrl =
-        process.env.NODE_ENV === "production"
-          ? process.env.NEXT_PUBLIC_BACKEND_URL
-          : "http://localhost:5000";
-
-      const response = await fetch(`${baseUrl}/api/properties/all`, {
-        method: "GET",
-      });
-
-      const data = await response.json();
-      setProperties(data);
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status} ${response.statusText}`);
-      }
-      console.log(data);
-
       console.log(data);
     } catch (err) {
       setError(err.message);
@@ -706,25 +612,20 @@ const AdminDashboard = () => {
             <Button
               variant={activeTab === "properties" ? "secondary" : "ghost"}
               className="w-full justify-start"
-              onClick={() => {
-                setActiveTab("properties");
-                fetchAllProperties();
-              }}
+              onClick={() => setActiveTab("properties")}
             >
               <Building className="mr-2 h-4 w-4" />
               Properties
             </Button>
-            <Button
+            {/* <Button
               variant={activeTab === "tickets" ? "secondary" : "ghost"}
               className="w-full justify-start"
-              onClick={() => {
-                setActiveTab("tickets");
-              }}
+              onClick={() => setActiveTab("tickets")}
             >
               <Ticket className="mr-2 h-4 w-4" />
               Support Tickets
-            </Button>
-            <Button
+            </Button> */}
+            {/* <Button
               variant={activeTab === "vendors" ? "secondary" : "ghost"}
               className="w-full justify-start"
               onClick={() => {
@@ -734,8 +635,8 @@ const AdminDashboard = () => {
             >
               <Briefcase className="mr-2 h-4 w-4" />
               Vendors
-            </Button>
-            <Button
+            </Button> */}
+            {/* <Button
               variant={activeTab === "users" ? "secondary" : "ghost"}
               className="w-full justify-start"
               onClick={() => {
@@ -745,7 +646,7 @@ const AdminDashboard = () => {
             >
               <Users className="mr-2 h-4 w-4" />
               Users
-            </Button>
+            </Button> */}
             <Button
               variant={activeTab === "analytics" ? "secondary" : "ghost"}
               className="w-full justify-start"
@@ -789,7 +690,7 @@ const AdminDashboard = () => {
         {activeTab === "overview" && (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+              <h1 className="text-2xl font-bold">Vendor Dashboard</h1>
               <div className="flex items-center space-x-4">
                 <Input
                   placeholder="Search..."
@@ -803,18 +704,87 @@ const AdminDashboard = () => {
               </div>
             </div>
 
+            {/* property status */}
+
+            <Card className="my-6">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <div className="space-y-1">
+                  <CardTitle className="flex items-center">
+                    <FaHeart className="mr-2 h-5 w-5 text-rose-500" />
+                    Property Highlights
+                  </CardTitle>
+                  <CardDescription>
+                    Properties you've saved for future investment
+                  </CardDescription>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setActiveTab("wishlist")}
+                >
+                  View All
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  {propertiesHighlight.slice(0, 4).map((property) => (
+                    <div
+                      key={property.id}
+                      className="bg-white rounded-lg shadow-sm overflow-hidden group hover:shadow-md transition-all relative"
+                    >
+                      <div className="h-24 overflow-hidden">
+                        <img
+                          src={property.image}
+                          alt={property.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                        <div className="absolute top-0 right-0 p-1">
+                          <div className="bg-white/80 backdrop-blur-sm p-1 rounded-full">
+                            <FaHeart
+                              className="h-4 w-4 text-rose-500"
+                              fill="#ec4899"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="p-2">
+                        <p className="font-medium text-xs truncate">
+                          {property.title}
+                        </p>
+                        <p className="text-xs text-gray-500 truncate">
+                          {property.location}
+                        </p>
+                        <div className="mt-1 flex justify-between items-center">
+                          <span className="text-xs font-semibold">
+                            ₹
+                            {Math.round(
+                              property.price / 100000
+                            ).toLocaleString()}{" "}
+                            L
+                          </span>
+                          <span className="text-xs bg-green-100 text-green-800 px-1.5 py-0.5 rounded-full">
+                            {property.yield}% yield
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Total Revenue
+                    Total Sold Shares Worth
                   </CardTitle>
                   <BarChart3 className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-green-500">
-                    +{adminParams.total_revenue}
+                    +{totalRevenue}
                   </div>
                   <p className="text-xs text-muted-foreground">
                     +12% from last month
@@ -824,13 +794,29 @@ const AdminDashboard = () => {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Properties
+                    Total Income
                   </CardTitle>
                   <Building className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
+                  <div className="text-2xl font-bold text-green-500">
+                    +{totalIncome}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    +12% from last month
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Total Listed property
+                  </CardTitle>
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
                   <div className="text-2xl font-bold">
-                    {adminParams.total_properties}
+                    {totalProperties}
                     <span className="text-xs ml-2 text-muted-foreground ">
                       total
                     </span>
@@ -841,8 +827,8 @@ const AdminDashboard = () => {
                       <FaEye className="ml-2" />
                     </p>
                     <p className="text-xs flex items-center text-muted-foreground font-semibold text-red-400">
-                      {adminParams.propertiesByStatus.under_review || 0} hidden
-                      <FaBan className="ml-2 text-red-500" />
+                      {adminParams.propertiesByStatus.under_review || 0} active
+                      <FaEyeSlash className="ml-2" />
                     </p>
                   </div>
                 </CardContent>
@@ -850,47 +836,22 @@ const AdminDashboard = () => {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Registered Users
-                  </CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    {adminParams.total_users}
-                  </div>
-                  <div className="flex justify-between pt-3">
-                    <p className="text-xs flex items-center text-muted-foreground font-semibold text-green-600 ">
-                      {adminParams.usersByRole.vendor} vendor
-                      <FaSellcast className="ml-2" />
-                    </p>
-                    <p className="text-xs flex items-center text-muted-foreground font-semibold">
-                      {adminParams.usersByRole.user} user
-                      <FaMale className="ml-2" />
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Open Tickets
+                    Dummy Field
                   </CardTitle>
                   <Ticket className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {adminParams.support_count}
+                    __
                   </div>
                   <div className="flex justify-between pt-3">
-                    <p className="text-xs flex items-center text-muted-foreground font-semibold text-red-400">
-                      {adminParams.formattedTicketStatusCounts.in_progress} open
-                      <FaSearch className="ml-2" />
+                    <p className="text-xs flex items-center text-muted-foreground font-semibold text-green-600 ">
+                      ____________
+                      <FaSellcast className="ml-2" />
                     </p>
-
-                    <p className="text-xs flex items-center font-semibold text-green-600 ">
-                      {adminParams.formattedTicketStatusCounts.resolved || 0}{" "}
-                      resolved
-                      <FaCheck className="ml-2" />
+                    <p className="text-xs flex items-center text-muted-foreground font-semibold">
+                     ________________
+                      <FaMale className="ml-2" />
                     </p>
                   </div>
                 </CardContent>
@@ -901,7 +862,7 @@ const AdminDashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <Card className="lg:col-span-2">
                 <CardHeader>
-                  <CardTitle>Sales Overview</CardTitle>
+                  <CardTitle>Revenue Overview</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="h-80">
@@ -921,8 +882,8 @@ const AdminDashboard = () => {
                         <Legend />
                         <Bar dataKey="revenue" name="Revenue" fill="#8884d8" />
                         <Bar
-                          dataKey="investments"
-                          name="Investments"
+                          dataKey="income"
+                          name="Income"
                           fill="#82ca9d"
                         />
                       </BarChart>
@@ -1097,23 +1058,6 @@ const AdminDashboard = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {selectedTicketId && (
-                        <div className="absolute bottom-0 right-24 w-1/2 ">
-                          <div className="bg-gray-800 rounded-3xl p-5">
-                            {/* <p className="text-center pb-1 text-white font-sans">Support Desk</p> */}
-                          <div
-                            className="absolute top-2 right-4 cursor-pointer text-red-500 font-bold  text-xl"
-                            onClick={() => setSelectedTicketId(null)}
-                          >
-                            ✕
-                          </div>
-
-                          <ChatBox ticketId={selectedTicketId} />
-                          </div>
-          
-                        </div>
-                      )}
-
                       {filteredTickets.map((ticket) => (
                         <tr
                           key={ticket.id}
@@ -1137,18 +1081,17 @@ const AdminDashboard = () => {
 
                           <td className="px-6 py-4">
                             <div className="flex items-center space-x-2">
-                              {/* <Button
+                              <Button
                                 variant="ghost"
                                 size="icon"
                                 className="h-8 w-8"
                               >
                                 <Eye className="h-4 w-4" />
-                              </Button> */}
+                              </Button>
                               <Button
                                 variant="ghost"
                                 size="icon"
                                 className="h-8 w-8"
-                                onClick={() => openChatModel(ticket.id)}
                               >
                                 <MessageSquare className="h-4 w-4" />
                               </Button>
@@ -1210,10 +1153,10 @@ const AdminDashboard = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setPropertyFilter("under_review")}
+                    onClick={() => setPropertyFilter("pending")}
                     className={propertyFilter === "pending" ? "bg-muted" : ""}
                   >
-                    Under_review
+                    Pending
                   </Button>
                   <Button
                     variant="outline"
@@ -1224,19 +1167,17 @@ const AdminDashboard = () => {
                     Disabled
                   </Button>
                 </div>
-
-                {/* <Input
+                <Input
                   placeholder="Search properties..."
                   className="max-w-xs"
-                /> */}
+                />
 
-                <Link
-                  to="/addproperty"
-                  className="flex items-center justify-center w-40 h-10 px-2 py-1 bg-yellow-500 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-                >
-                  <Plus className="h-5 w-5 mr-2" />
-                  Add Property
+                <Link>
                 </Link>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Property
+                </Button>
               </div>
             </div>
 
@@ -1246,25 +1187,25 @@ const AdminDashboard = () => {
                   <table className="w-full text-sm text-left">
                     <thead className="text-xs uppercase bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3">SNo. </th>
-                        <th className="px-6 py-3">Object ids </th>
-                        <th className="px-6 py-3">Property </th>
-                        <th className="px-6 py-3">Location </th>
-                        <th className="px-6 py-3">Type </th>
-                        <th className="px-6 py-3">Price </th>
-                        <th className="px-6 py-3">Status </th>
-                        <th className="px-6 py-3">Actions </th>
+                        <th className="px-6 py-3">ID</th>
+                        <th className="px-6 py-3">Property</th>
+                        <th className="px-6 py-3">Location</th>
+                        <th className="px-6 py-3">Type</th>
+                        <th className="px-6 py-3">Price</th>
+                        <th className="px-6 py-3">Status</th>
+                        <th className="px-6 py-3">Investors</th>
+                        <th className="px-6 py-3">Funding</th>
+                        <th className="px-6 py-3">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredProperties.map((property, index) => (
+                      {filteredProperties.map((property) => (
                         <tr
-                          key={property._id}
+                          key={property.id}
                           className="bg-white border-b hover:bg-gray-50"
                         >
-                          <td className="px-6 py-4 font-medium">{index + 1}</td>
                           <td className="px-6 py-4 font-medium">
-                            {property._id}
+                            {property.id}
                           </td>
                           <td className="px-6 py-4">{property.title}</td>
                           <td className="px-6 py-4">{property.location}</td>
@@ -1282,69 +1223,49 @@ const AdminDashboard = () => {
                                 property.status.slice(1)}
                             </span>
                           </td>
-
-                          <td className="px-6 py-4 text-center">
-                            <div className="flex text-center items-center space-x-2">
-                              {/* View Button */}
-                              <Link
-                                to={`/property/${property._id}`}
-                                target="_blank"
+                          <td className="px-6 py-4">{property.investors}</td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center">
+                              <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div
+                                  className="bg-primary h-2 rounded-full"
+                                  style={{
+                                    width: `${property.fundingCompleted}%`,
+                                  }}
+                                ></div>
+                              </div>
+                              <span className="ml-2 text-xs">
+                                {property.fundingCompleted}%
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center space-x-2">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
                               >
-                                <div className="relative group">
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8"
-                                  >
-                                    <FaRegEye className="text-green-700 h-4 w-4" />
-                                  </Button>
-                                  <span className="absolute left-1/2 w-32 transform -translate-x-1/2 bottom-3 mb-6 text-sm text-white bg-gray-500 px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    View Property
-                                  </span>
-                                </div>
-                              </Link>
-
-                              {/* Approve/Disable Button */}
-                              <div className="relative group">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8"
-                                  onClick={() =>
-                                    property.status === "active"
-                                      ? handleDisableProperty(property._id)
-                                      : handleApproveProperty(property._id)
-                                  }
-                                >
-                                  {property.status === "active" ? (
-                                    <FaMinusCircle className="h-4 w-4 text-red-500" />
-                                  ) : (
-                                    <Check className="h-4 w-4 text-green-500" />
-                                  )}
-                                </Button>
-                                <span className="absolute left-1/2 transform -translate-x-1/2 bottom-3 mb-6 text-sm text-white bg-gray-500 px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                  {property.status === "active"
-                                    ? "Disable"
-                                    : "Approve"}
-                                </span>
-                              </div>
-
-                              {/* Delete Button */}
-                              <div className="relative group">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8"
-                                  onClick={() =>
-                                    handleDeleteProperty(property._id)
-                                  }
-                                >
-                                  <FaTrash className="h-4 w-4 text-red-600" />
-                                </Button>
-                                <span className="absolute -left-6 transform -translate-x-1/2 bottom-2 w-36 mb-6 text-sm text-white bg-gray-500 px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                  Delete Property
-                                </span>
-                              </div>
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                              >
+                                {property.status === "active" ? (
+                                  <X className="h-4 w-4" />
+                                ) : (
+                                  <Check className="h-4 w-4" />
+                                )}
+                              </Button>
                             </div>
                           </td>
                         </tr>
@@ -2100,4 +2021,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default VendorDashboard;
