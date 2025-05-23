@@ -65,7 +65,7 @@ export default function LuxuryPropertyMarketplace() {
         const baseUrl =
           process.env.NODE_ENV === "production"
             ? process.env.NEXT_PUBLIC_BACKEND_URL
-            : "http://localhost:5000";
+            : "http://51.79.146.251:5000";
 
         const allRes = await fetch(`${baseUrl}/api/properties/getmarketplace`, {
           method: "POST",

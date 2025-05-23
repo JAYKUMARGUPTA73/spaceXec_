@@ -28,7 +28,7 @@ export default function ChatButton() {
         const baseUrl =
           process.env.NODE_ENV === "production"
             ? process.env.NEXT_PUBLIC_BACKEND_URL
-            : "http://localhost:5000";
+            : "http://51.79.146.251:5000";
 
         const res = await fetch(
           `${baseUrl}/api/users/activetickets/${userId}`,

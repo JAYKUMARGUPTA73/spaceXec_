@@ -393,7 +393,7 @@ const AdminDashboard = () => {
       const baseUrl =
         process.env.NODE_ENV === "production"
           ? process.env.NEXT_PUBLIC_BACKEND_URL
-          : "http://localhost:5000";
+          : "http://51.79.146.251:5000";
 
       const res = await fetch(
         `${baseUrl}/api/properties/disable/${propertyId}`,
@@ -433,7 +433,7 @@ const AdminDashboard = () => {
       const baseUrl =
         process.env.NODE_ENV === "production"
           ? process.env.NEXT_PUBLIC_BACKEND_URL
-          : "http://localhost:5000";
+          : "http://51.79.146.251:5000";
 
       const res = await fetch(
         `${baseUrl}/api/properties/delete/${propertyId}`,
@@ -474,7 +474,7 @@ const AdminDashboard = () => {
       const baseUrl =
         process.env.NODE_ENV === "production"
           ? process.env.NEXT_PUBLIC_BACKEND_URL
-          : "http://localhost:5000";
+          : "http://51.79.146.251:5000";
 
       const res = await fetch(
         `${baseUrl}/api/properties/approve/${propertyId}`,
@@ -513,7 +513,7 @@ const AdminDashboard = () => {
         const baseUrl =
           process.env.NODE_ENV === "production"
             ? process.env.NEXT_PUBLIC_BACKEND_URL
-            : "http://localhost:5000";
+            : "http://51.79.146.251:5000";
 
         const response = await fetch(`${baseUrl}/api/users/admindashboard`, {
           method: "POST",
@@ -557,7 +557,7 @@ const AdminDashboard = () => {
       const baseUrl =
         process.env.NODE_ENV === "production"
           ? process.env.NEXT_PUBLIC_BACKEND_URL
-          : "http://localhost:5000";
+          : "http://51.79.146.251:5000";
 
       const response = await fetch(
         `${baseUrl}/api/users/admindashboard/usersdata`,
@@ -585,7 +585,7 @@ const AdminDashboard = () => {
       const baseUrl =
         process.env.NODE_ENV === "production"
           ? process.env.NEXT_PUBLIC_BACKEND_URL
-          : "http://localhost:5000";
+          : "http://51.79.146.251:5000";
 
       const response = await fetch(`${baseUrl}/api/properties/all`, {
         method: "GET",
@@ -610,7 +610,7 @@ const AdminDashboard = () => {
       const baseUrl =
         process.env.NODE_ENV === "production"
           ? process.env.NEXT_PUBLIC_BACKEND_URL
-          : "http://localhost:5000";
+          : "http://51.79.146.251:5000";
 
       const response = await fetch(
         `${baseUrl}/api/users/admindashboard/vendorsdata`,

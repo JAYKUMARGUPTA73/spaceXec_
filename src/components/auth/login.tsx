@@ -32,7 +32,7 @@ export default function Login() {
     const baseUrl =
     process.env.NODE_ENV === "production"
       ? process.env.REACT_APP_BACKEND_URL
-      : "http://localhost:5000";
+      : "http://51.79.146.251:5000";
 
   try {
     const res = await fetch(`${baseUrl}/api/users/loginwithemail`, {
@@ -121,7 +121,7 @@ export default function Login() {
     const baseUrl =
       process.env.NODE_ENV === "production"
         ? process.env.REACT_APP_BACKEND_URL
-        : "http://localhost:5000";
+        : "http://51.79.146.251:5000";
 
     try {
       const res = await fetch(`${baseUrl}/api/users/login`, {
