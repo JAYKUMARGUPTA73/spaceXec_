@@ -51,9 +51,7 @@ const SellNFTPage: React.FC = () => {
   const [step, setStep] = useState<"token" | "signature" | "review">("token");
   const [price, setPrice] = useState("");
   const [copied, setCopied] = useState(false);
-  const [sharePercentage, setSharePercentage] = useState<number>(
-    property.ownership
-  );
+  const [sharePercentage, setSharePercentage] = useState<number>(10);
 
   useEffect(() => {
     if (location.state === undefined && !property) {
@@ -82,7 +80,7 @@ const SellNFTPage: React.FC = () => {
       );
     }
   };
-
+// done
   const handleSignature = async () => {
     if (signature && signature.length > 10) {
       const baseUrl =
@@ -121,10 +119,10 @@ const SellNFTPage: React.FC = () => {
       return;
     }
 
+    // console.log(sharePercentage)
     if (
       sharePercentage % 10 !== 0 ||
-      sharePercentage <= 0 ||
-      sharePercentage > property.ownership
+      sharePercentage <= 0
     ) {
       toast.error("Select a valid share percentage (multiples of 10)");
       return;
@@ -135,18 +133,35 @@ const SellNFTPage: React.FC = () => {
         : "http://localhost:5000";
 
     const res = await fetch(`${baseUrl}/api/properties/listnft`, {
-      method: "PUT", // PATCH for disabling
+      method: "POST", // PATCH for disabling
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
+      body:JSON.stringify({
+        sellerId:userId,
+        propertyId:property.id,
+        nftTokenId:enteredToken,
+        sharePercentage,
+        listingPrice:price,
+        pricePerShare:price,
+      }),
       credentials: "include",
     });
+    const data=await res.json();
+    console.log(data)
+    if(res.ok){
+        toast.success("NFT listed successfully on marketplace!");
+        setTimeout(() => {
+          navigate("/marketplace");
+        }, 3000);
 
-    toast.success("NFT listed successfully on marketplace!");
-    setTimeout(() => {
-      navigate("/portfolio");
-    }, 3000);
+    }else{
+        
+        toast.error(data.message)
+
+    }
+
   };
 
   const renderStepContent = () => {

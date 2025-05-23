@@ -1,16 +1,21 @@
 import { useState, useEffect, useRef } from "react";
+import { FaEye, FaRupeeSign } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 
 export default function LuxuryPropertyMarketplace() {
   const catalogRef = useRef(null); // Create a ref
+  const navigate = useNavigate();
 
   // State for properties data
-  const [properties, setProperties] = useState([]);
+  const [nfts, setNft] = useState([]);
   const [userId, setUserId] = useState("");
   const [featuredProperties, setFeaturedProperties] = useState([]);
   const [trendingProperties, setTrendingProperties] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  
 
   // State for UI controls
   const [activeTab, setActiveTab] = useState("all");
@@ -53,49 +58,69 @@ export default function LuxuryPropertyMarketplace() {
   useEffect(() => {
     const id = localStorage.getItem("_id");
     setUserId(id);
-    const fetchProperties = async () => {
+
+    const fetchNft = async () => {
       setIsLoading(true);
       try {
-        // Replace with actual API endpoints
-        const allResponse = await fetch("/api/properties");
-        const featuredResponse = await fetch("/api/properties/featured");
-        const trendingResponse = await fetch("/api/properties/trending");
+        const baseUrl =
+          process.env.NODE_ENV === "production"
+            ? process.env.NEXT_PUBLIC_BACKEND_URL
+            : "http://localhost:5000";
 
-        if (!allResponse.ok || !featuredResponse.ok || !trendingResponse.ok) {
-          throw new Error("Failed to fetch property data");
+        const allRes = await fetch(`${baseUrl}/api/properties/getmarketplace`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
+        });
+
+        if (!allRes.ok) {
+          throw new Error("Failed to fetch all nfts");
         }
 
-        const allData = await allResponse.json();
-        const featuredData = await featuredResponse.json();
-        const trendingData = await trendingResponse.json();
-
-        setProperties(allData);
-        setFeaturedProperties(featuredData);
-        setTrendingProperties(trendingData);
+        const allData = await allRes.json();
+        console.log(allData.listings);
+        setNft(allData.listings);
       } catch (err) {
-        setError(err.message);
-        // Use fallback data for demonstration
-        setProperties(getDemoProperties());
-        setFeaturedProperties(getDemoProperties().slice(0, 3));
-        setTrendingProperties(getDemoProperties().slice(3, 6));
+        console.error(err);
+        setError((err as Error).message);
+        const demo = getDemoProperties();
+        setNft(demo);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchProperties();
+    fetchNft();
   }, []);
 
   // Filter properties based on search and filter criteria
-  const filteredProperties = properties.filter((property) => {
-    const matchesSearch =
-      property.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      property.location.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredProperties = nfts.filter((nft) => {
+    // Check if `property` exists and has the necessary properties
+    const name = nft.propertyId?.name ? nft.propertyId.name.toLowerCase() : "";
+    const location = nft.propertyId?.location
+      ? nft.propertyId.location.toLowerCase()
+      : "";
+    const type = nft.propertyId?.type;
+    // console.log(nft.propertyId
+    // );
+    // console.log(name)
+    // console.log(location)
+    // console.log(type)
 
-    const matchesType = filterType ? property.type === filterType : true;
+    const matchesSearch =
+      name.includes(searchTerm.toLowerCase()) ||
+      location.includes(searchTerm.toLowerCase());
+
+    const matchesType = filterType ? type === filterType : true;
+
+    // console.log(matchesType)
 
     return matchesSearch && matchesType;
   });
+
+  //   console.log(filteredProperties)
 
   // Get properties based on active tab
   const getDisplayProperties = () => {
@@ -105,7 +130,9 @@ export default function LuxuryPropertyMarketplace() {
       case "trending":
         return trendingProperties;
       case "all":
+        console.log(filteredProperties);
       default:
+        console.log("filteredProperties");
         return filteredProperties;
     }
   };
@@ -216,86 +243,89 @@ export default function LuxuryPropertyMarketplace() {
 
       {/* Hero Section */}
       <section className="h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white py-16 flex flex-col justify-between">
-  <div className="max-w-7xl mx-auto px-4 flex-1">
-    <div className="flex flex-col lg:flex-row items-center">
-      <div className="lg:w-1/2 mb-8 lg:mb-0">
-        <h2 className="text-4xl font-serif font-bold mb-4 bg-gradient-to-r from-yellow-700 via-yellow-400 to-yellow-300 text-transparent bg-clip-text">
-          Own Shares in Exclusive Properties
-        </h2>
-        <p className="text-lg mb-6">
-          Invest in high-yield real estate assets through secure NFT
-          ownership. Diversify your portfolio with premium properties
-          worldwide.
-        </p>
-        <div className="flex flex-wrap gap-4">
-          <div className="bg-gray-800 border border-yellow-500 rounded-lg p-4 flex-1">
-            <p className="text-yellow-300 text-sm">Average Annual Yield</p>
-            <p className="text-2xl font-bold">6.8%</p>
-          </div>
-          <div className="bg-gray-800 border border-yellow-500 rounded-lg p-4 flex-1">
-            <p className="text-yellow-300 text-sm">Properties Listed</p>
-            <p className="text-2xl font-bold">180+</p>
-          </div>
-          <div className="bg-gray-800 border border-yellow-500 rounded-lg p-4 flex-1">
-            <p className="text-yellow-300 text-sm">Investors</p>
-            <p className="text-2xl font-bold">5,400+</p>
+        <div className="max-w-7xl mx-auto px-4 flex-1">
+          <div className="flex flex-col lg:flex-row items-center">
+            <div className="lg:w-1/2 mb-8 lg:mb-0">
+              <h2 className="text-4xl font-serif font-bold mb-4 bg-gradient-to-r from-yellow-700 via-yellow-400 to-yellow-300 text-transparent bg-clip-text">
+                Own Shares in Exclusive Properties
+              </h2>
+              <p className="text-lg mb-6">
+                Invest in high-yield real estate assets through secure NFT
+                ownership. Diversify your portfolio with premium properties
+                worldwide.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <div className="bg-gray-800 border border-yellow-500 rounded-lg p-4 flex-1">
+                  <p className="text-yellow-300 text-sm">
+                    Average Annual Yield
+                  </p>
+                  <p className="text-2xl font-bold">6.8%</p>
+                </div>
+                <div className="bg-gray-800 border border-yellow-500 rounded-lg p-4 flex-1">
+                  <p className="text-yellow-300 text-sm">Properties Listed</p>
+                  <p className="text-2xl font-bold">180+</p>
+                </div>
+                <div className="bg-gray-800 border border-yellow-500 rounded-lg p-4 flex-1">
+                  <p className="text-yellow-300 text-sm">Investors</p>
+                  <p className="text-2xl font-bold">5,400+</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:w-1/2 lg:pl-12">
+              <div className="relative rounded-lg overflow-hidden shadow-2xl border-4 border-yellow-500">
+                <img
+                  src="/image.png"
+                  alt="Luxury Property"
+                  className="w-full"
+                />
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-6">
+                  <p className="text-xl font-bold text-white">
+                    Featured: Golden Gate Mansion
+                  </p>
+                  <p className="text-yellow-300">
+                    San Francisco, CA • 8.2% Yield
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="lg:w-1/2 lg:pl-12">
-        <div className="relative rounded-lg overflow-hidden shadow-2xl border-4 border-yellow-500">
-          <img
-            src="/image.png"
-            alt="Luxury Property"
-            className="w-full"
-          />
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-6">
-            <p className="text-xl font-bold text-white">
-              Featured: Golden Gate Mansion
-            </p>
-            <p className="text-yellow-300">San Francisco, CA • 8.2% Yield</p>
+        {/* Sticky footer inside section */}
+        <header className="w-full bg-gradient-to-r from-yellow-800 via-yellow-700 to-yellow-600 shadow-lg">
+          <div className="max-w-7xl mx-auto px-4 py-6">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <div className="text-center md:text-left mb-4 md:mb-0">
+                <h1 className="text-3xl font-serif font-bold text-white">
+                  <span className="text-gray-100">
+                    Space<span className="text-red-600">X</span>ec
+                  </span>{" "}
+                  MarketPlace
+                </h1>
+                <p className="text-yellow-100 text-sm mt-1">
+                  Premium Real Estate NFT Marketplace
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button
+                  className="px-6 py-2 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-medium rounded border-2 border-yellow-300 shadow-md transition-all"
+                  onClick={scrollToCatalog}
+                >
+                  Browse Catalog
+                </button>
+                <Link
+                  to={`/dashboard/${userId}`}
+                  className="px-6 py-2 bg-gray-800 hover:bg-gray-900 text-yellow-300 font-medium rounded border-2 border-yellow-500 shadow-md transition-all inline-block text-center"
+                >
+                  Investment Portfolio
+                </Link>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  {/* Sticky footer inside section */}
-  <header className="w-full bg-gradient-to-r from-yellow-800 via-yellow-700 to-yellow-600 shadow-lg">
-    <div className="max-w-7xl mx-auto px-4 py-6">
-      <div className="flex flex-col md:flex-row justify-between items-center">
-        <div className="text-center md:text-left mb-4 md:mb-0">
-          <h1 className="text-3xl font-serif font-bold text-white">
-            <span className="text-gray-100">
-              Space<span className="text-red-600">X</span>ec
-            </span>{" "}
-            MarketPlace
-          </h1>
-          <p className="text-yellow-100 text-sm mt-1">
-            Premium Real Estate NFT Marketplace
-          </p>
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-4">
-          <button
-            className="px-6 py-2 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-medium rounded border-2 border-yellow-300 shadow-md transition-all"
-            onClick={scrollToCatalog}
-          >
-            Browse Catalog
-          </button>
-          <Link
-            to={`/dashboard/${userId}`}
-            className="px-6 py-2 bg-gray-800 hover:bg-gray-900 text-yellow-300 font-medium rounded border-2 border-yellow-500 shadow-md transition-all inline-block text-center"
-          >
-            Investment Portfolio
-          </Link>
-        </div>
-      </div>
-    </div>
-  </header>
-</section>
-
+        </header>
+      </section>
 
       {/* Main Marketplace Section */}
       <main className="max-w-7xl mx-auto px-4 py-12">
@@ -306,36 +336,19 @@ export default function LuxuryPropertyMarketplace() {
               Property Marketplace
             </h2>
             <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setActiveTab("all")}
-                className={`px-4 py-2 rounded-md font-medium ${
-                  activeTab === "all"
-                    ? "bg-yellow-500 text-white"
-                    : "bg-gray-200 text-gray-700"
-                }`}
-              >
-                All Properties
-              </button>
-              <button
-                onClick={() => setActiveTab("featured")}
-                className={`px-4 py-2 rounded-md font-medium ${
-                  activeTab === "featured"
-                    ? "bg-yellow-500 text-white"
-                    : "bg-gray-200 text-gray-700"
-                }`}
-              >
-                Featured
-              </button>
-              <button
-                onClick={() => setActiveTab("trending")}
-                className={`px-4 py-2 rounded-md font-medium ${
-                  activeTab === "trending"
-                    ? "bg-yellow-500 text-white"
-                    : "bg-gray-200 text-gray-700"
-                }`}
-              >
-                Trending
-              </button>
+              {["all", "featured", "trending"].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-4 py-2 rounded-md font-medium ${
+                    activeTab === tab
+                      ? "bg-yellow-500 text-white"
+                      : "bg-gray-200 text-gray-700"
+                  }`}
+                >
+                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -369,6 +382,7 @@ export default function LuxuryPropertyMarketplace() {
                 <option value="Residential">Residential</option>
                 <option value="Commercial">Commercial</option>
                 <option value="Vacation">Vacation</option>
+                <option value="type A">Type A</option>
               </select>
             </div>
 
@@ -389,11 +403,13 @@ export default function LuxuryPropertyMarketplace() {
         {/* Properties Grid */}
         {isLoading ? (
           <div className="text-center py-12">
-            <div className="inline-block w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className="inline-block w-8 h-8   border-t-transparent rounded-full animate-spin"></div>
             <p className="mt-2 text-gray-600">Loading premium properties...</p>
           </div>
         ) : error ? (
-          ""
+          <div className="text-center text-red-600">
+            Failed to load properties.
+          </div>
         ) : getDisplayProperties().length === 0 ? (
           <div className="text-center py-12 bg-white rounded-lg shadow-md">
             <p className="text-gray-500">
@@ -401,96 +417,108 @@ export default function LuxuryPropertyMarketplace() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {getDisplayProperties().map((property) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+            {getDisplayProperties().map((nft) => (
               <div
-                key={property.id}
-                className="rounded-lg overflow-hidden shadow-lg transform transition duration-300 hover:scale-105"
+                key={nft._id}
+                className="overflow-hidden  shadow-lg transform transition duration-300 hover:scale-105 "
               >
-                {/* Golden Premium Card Design */}
-                <div className="relative bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-600 p-2 rounded-lg">
-                  <div className="bg-white rounded-lg overflow-hidden">
-                    {/* Property Image */}
-                    <div className="h-48 overflow-hidden relative">
-                      <img
-                        src={property.image}
-                        alt={property.name}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute top-0 right-0 bg-yellow-500 text-white px-3 py-1 font-medium">
-                        {property.type}
-                      </div>
-                      <div className="absolute top-0 left-0 bg-black bg-opacity-70 text-yellow-300 px-3 py-1 font-medium flex items-center">
-                        <span>{property.yield}% Yield</span>
-                      </div>
+                <div className="bg-white overflow-hidden ">
+                  {/* Image Section */}
+                  <div className="h-48 overflow-hidden relative">
+                    <img
+                      src={nft.propertyId.images?.[0]}
+                      alt={nft.propertyId.name}
+                      className="w-full h-full object-cover rounded-t-lg"
+                    />
+                    <div className="absolute top-0 right-0 bg-yellow-500 text-white px-3 py-1 font-medium text-xs rounded-bl-md">
+                      {nft.propertyId.type || "NFT Type"}
                     </div>
-
-                    {/* Property Info */}
-                    <div className="p-4">
-                      <h3 className="text-xl font-serif font-bold mb-1">
-                        {property.name}
-                      </h3>
-                      <p className="text-gray-600 mb-3 flex items-center">
-                        <svg
-                          className="w-4 h-4 mr-1"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        {property.location}
-                      </p>
-
-                      <div className="flex justify-between items-center mb-3 pb-3 border-b border-gray-200">
-                        <span className="font-bold text-lg text-gray-800">
-                          {formatCurrency(property.price)}
-                        </span>
-                        <span className="text-sm text-gray-600">
-                          {formatCurrency(property.pricePerShare)} per share
-                        </span>
-                      </div>
-
-                      <div className="mb-4">
-                        <div className="flex justify-between text-sm mb-1">
-                          <span className="text-gray-600">
-                            Available Shares:
-                          </span>
-                          <span className="font-medium">
-                            {property.sharesAvailable}
-                          </span>
-                        </div>
-
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-yellow-500 h-2 rounded-full"
-                            style={{
-                              width: `${Math.min(
-                                100,
-                                100 - property.sharesAvailable / 2
-                              )}%`,
-                            }}
-                          ></div>
-                        </div>
-                      </div>
-
-                      <button
-                        onClick={() => viewPropertyDetails(property)}
-                        className="w-full py-3 bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 text-white font-medium rounded-lg shadow-md transition-all"
-                      >
-                        View Investment Details
-                      </button>
+                    <div className="absolute top-0 left-0 bg-black bg-opacity-70 text-yellow-300 px-3 py-1 font-medium text-xs flex items-center">
+                      <span>{nft.propertyId.return?.total}% Return</span>
                     </div>
                   </div>
 
-                  {/* Gold corner accents */}
-                  <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-yellow-800 rounded-tl-lg"></div>
-                  <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-yellow-800 rounded-tr-lg"></div>
-                  <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-yellow-800 rounded-bl-lg"></div>
-                  <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-yellow-800 rounded-br-lg"></div>
+                  {/* Content Section */}
+                  <div className="p-4">
+                    {/* Property Name */}
+                    <h3 className="text-xl font-serif font-semibold text-gray-900 mb-2">
+                      {nft.propertyId.name}
+                    </h3>
+
+                    {/* Property Location */}
+                    <p className="text-gray-600 mb-2 text-sm">
+                      {nft.propertyId.location}
+                    </p>
+
+                    {/* NFT ID */}
+                    <p className="text-sm text-gray-700 mb-3 italic font-mono">
+                      NFT ID: {nft.nftTokenId.slice(0, 30)}...
+                    </p>
+
+                    {/* Pricing & Share Information */}
+                    <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-200">
+                      <span className="flex items-center font-bold text-xl text-gray-800">
+                        <FaRupeeSign className="mr-1" />
+                        {nft.listingPrice}
+                      </span>
+                      <span className="flex items-center text-sm text-gray-600">
+                        <FaRupeeSign className="mr-1" />
+                        {parseFloat(nft.pricePerShare).toFixed(2)} / share
+                      </span>
+                    </div>
+
+                    {/* Investment Details */}
+                    <div className="mb-6 space-y-4 text-sm text-gray-600">
+                      {/* Available Shares */}
+                      <div className="flex items-center justify-between">
+                        <p className="font-medium text-gray-800">
+                          Available Shares:
+                        </p>
+                        <span className="text-gray-700 font-semibold">
+                          {nft.shareCount || 3}
+                        </span>
+                      </div>
+
+                      {/* Investment Term */}
+                      <div className="flex items-center justify-between">
+                        <p className="font-medium text-gray-800">
+                          Investment Term:
+                        </p>
+                        <span className="text-gray-700 font-semibold">
+                          {nft.propertyId.offeringDetails?.investmentTerm} yrs
+                        </span>
+                      </div>
+
+                      {/* Expected Rental Yield */}
+                      <div className="flex items-center justify-between">
+                        <p className="font-medium text-gray-800">
+                          Expected Rental Yield:
+                        </p>
+                        <span className="text-gray-700 font-semibold">
+                          {nft.propertyId.return?.rental}%
+                        </span>
+                      </div>
+
+                      {/* Appreciation */}
+                      <div className="flex items-center justify-between">
+                        <p className="font-medium text-gray-800">
+                          Appreciation:
+                        </p>
+                        <span className="text-gray-700 font-semibold">
+                          {nft.propertyId.return?.appreciation}%
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* View NFT Button */}
+                    <button
+                      onClick={() => viewPropertyDetails(nft)}
+                      className="w-full py-3 bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 text-white font-medium  shadow-2xl transition-all"
+                    >
+                      View NFT Investment
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -683,7 +711,7 @@ export default function LuxuryPropertyMarketplace() {
           <div className="relative bg-white rounded-lg shadow-2xl max-w-4xl w-full max-h-screen overflow-y-auto">
             <div className="sticky top-0 bg-white border-b border-gray-200 flex justify-between items-center p-4 z-10">
               <h3 className="text-2xl font-serif font-bold">
-                {selectedProperty.name}
+                NFT: {selectedProperty.propertyId.name}
               </h3>
               <button
                 onClick={() => setIsDetailsModalOpen(false)}
@@ -706,135 +734,251 @@ export default function LuxuryPropertyMarketplace() {
             </div>
 
             <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Left Panel */}
                 <div>
-                  <div className="mb-6 rounded-lg overflow-hidden border-4 border-yellow-500">
+                  <div className="mb-6 rounded-lg overflow-hidden border-4 ">
                     <img
-                      src={selectedProperty.image}
+                      src={selectedProperty.propertyId.images[0]}
                       alt={selectedProperty.name}
                       className="w-full h-64 object-cover"
                     />
                   </div>
 
                   <div className="bg-gray-100 p-4 rounded-lg mb-6">
-                    <h4 className="font-bold text-lg mb-2">
-                      Property Overview
-                    </h4>
-                    <p className="text-gray-700 mb-4">
-                      {selectedProperty.description}
+                    <h4 className="font-bold text-lg mb-2">NFT Overview</h4>
+                    <p className="text-gray-700 mb-4 max-w-80">
+                      {selectedProperty.propertyId.description}
                     </p>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-6 text-sm">
                       <div>
-                        <div className="text-sm text-gray-500">Type</div>
+                        <div className="text-gray-500">Location</div>
                         <div className="font-medium">
-                          {selectedProperty.type}
+                          {selectedProperty.propertyId.location}
                         </div>
                       </div>
                       <div>
-                        <div className="text-sm text-gray-500">Location</div>
-                        <div className="font-medium">
-                          {selectedProperty.location}
+                        <div className="text-gray-500">Total Value</div>
+                        <div className="flex items-center font-medium">
+                          <FaRupeeSign />
+                          {selectedProperty.listingPrice}
                         </div>
                       </div>
                       <div>
-                        <div className="text-sm text-gray-500">Total Value</div>
+                        <div className="text-gray-500">Shares Count</div>
+                        <div className="flex items-center font-medium">
+                          {selectedProperty.shareCount || 3}
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="text-gray-500">Platform Fee</div>
+                        <div className="flex items-center font-medium">
+                          {selectedProperty.royalties || 3}%
+                        </div>
+                      </div>
+                    </div>
+                    <div className="pt-5">
+                      <div className="text-gray-500">Token ID</div>
+                      <div className="font-medium break-all">
+                        {selectedProperty.nftTokenId}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-100 p-4 rounded-lg mb-6">
+                    <h4 className="font-bold text-lg mb-2">
+                      StakeHolders Overview
+                    </h4>
+
+                    <div className="grid grid-cols-2 gap-4 pr-4 text-sm">
+                      <div>
+                        <div className="text-gray-500">Seller Name</div>
                         <div className="font-medium">
-                          {formatCurrency(selectedProperty.price)}
+                          {selectedProperty.sellerId.name}
                         </div>
                       </div>
                       <div>
-                        <div className="text-sm text-gray-500">
-                          Annual Yield
+                        <div className="text-gray-500">Listed At</div>
+                        <div className="flex items-center font-medium">
+                          {new Date(
+                            selectedProperty.updatedAt
+                          ).toLocaleDateString("en-IN", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          })}
                         </div>
-                        <div className="font-medium text-green-600">
-                          {selectedProperty.yield}%
+                      </div>
+                      <div>
+                        <div className="text-gray-500">Vendor name</div>
+                        <div className="flex items-center font-medium">
+                          {selectedProperty.propertyId.vendorInfo.name || 3}
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="text-gray-500">Vendor email</div>
+                        <div className="flex items-center font-medium">
+                          {selectedProperty.propertyId.vendorInfo.email || 3}
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
 
+                {/* Right Panel */}
                 <div>
                   <div className="bg-gray-800 text-white p-6 rounded-lg mb-6">
                     <h4 className="font-bold text-lg mb-4">
                       Investment Details
                     </h4>
-                    <div className="space-y-4">
+                    <div className="space-y-4 text-sm">
                       <div className="flex justify-between">
                         <span>Share Price:</span>
                         <span className="font-bold">
-                          {formatCurrency(selectedProperty.pricePerShare)}
+                          {formatCurrency(selectedProperty.listingPrice)}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span>Available Shares:</span>
                         <span className="font-bold">
-                          {selectedProperty.sharesAvailable}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Min. Investment:</span>
-                        <span className="font-bold">
-                          {formatCurrency(selectedProperty.pricePerShare)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between border-t border-gray-700 pt-4">
-                        <span>Expected Annual Return:</span>
-                        <span className="font-bold text-green-400">
-                          {selectedProperty.yield}%
+                          {selectedProperty.shareCount || 3}
                         </span>
                       </div>
                     </div>
-
-                    <div className="mt-6">
-                      <label className="block text-sm font-medium mb-2">
-                        Number of Shares to Purchase
-                      </label>
-                      <input
-                        type="number"
-                        min="1"
-                        max={selectedProperty.sharesAvailable}
-                        className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white"
-                        defaultValue="1"
-                      />
-                    </div>
-
-                    <button className="w-full mt-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold rounded-md shadow-md">
-                      Purchase Shares
+                    <button 
+                    className="w-full mt-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold  shadow-md"
+                    onClick={() => {
+                      navigate('/marketplace/buy', { state: { property: selectedProperty} });
+                    }}
+                    >
+                      Purchase NFT Shares
                     </button>
                   </div>
 
-                  <div className="bg-gray-100 p-6 rounded-lg">
+                  {/* <div className="bg-gray-100 p-6 rounded-lg">
                     <h4 className="font-bold text-lg mb-4">
-                      Historical Performance
+                      Performance Projection
                     </h4>
-                    <div className="h-40 bg-white border border-gray-200 rounded mb-4 flex items-center justify-center">
+                    <div className="h-40 bg-white border border-gray-200 rounded mb-4 flex items-center justify-center text-gray-400">
                       [Performance Chart Placeholder]
                     </div>
-                    <div className="grid grid-cols-3 gap-4 text-center">
+                    <div className="grid grid-cols-3 gap-4 text-center text-sm">
                       <div>
-                        <div className="text-sm text-gray-500">1 Year</div>
+                        <div className="text-gray-500">1 Year</div>
                         <div className="font-bold text-green-600">
                           +{(selectedProperty.yield - 0.2).toFixed(1)}%
                         </div>
                       </div>
                       <div>
-                        <div className="text-sm text-gray-500">3 Years</div>
+                        <div className="text-gray-500">3 Years</div>
                         <div className="font-bold text-green-600">
                           +{(selectedProperty.yield + 2.5).toFixed(1)}%
                         </div>
                       </div>
                       <div>
-                        <div className="text-sm text-gray-500">5 Years</div>
+                        <div className="text-gray-500">5 Years</div>
                         <div className="font-bold text-green-600">
                           +{(selectedProperty.yield + 8.7).toFixed(1)}%
                         </div>
                       </div>
                     </div>
+                  </div> */}
+
+                  <div className="mt-6">
+                    <h5 className="font-semibold mb-2 text-sm text-gray-700">
+                      Amenities
+                    </h5>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+                      {selectedProperty.propertyId.amenities?.length > 0 ? (
+                        selectedProperty.propertyId.amenities.map(
+                          (amenity, index) => (
+                            <div
+                              key={index}
+                              className="bg-white border border-gray-200 p-2 rounded text-gray-700 shadow-sm"
+                            >
+                              {amenity}
+                            </div>
+                          )
+                        )
+                      ) : (
+                        <div className="text-gray-500 text-sm">
+                          No amenities listed.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-6">
+                    <h5 className="font-semibold mb-2 text-sm text-gray-700">
+                      Current Owners
+                    </h5>
+                    <div className="space-y-3">
+                      {selectedProperty.propertyId.owners?.length > 0 ? (
+                        selectedProperty.propertyId.owners.map(
+                          (owner, index) => (
+                            <div
+                              key={owner._id || index}
+                              className="bg-white p-3 rounded shadow-sm text-sm border border-gray-200"
+                            >
+                              <div className="font-medium text-gray-800">
+                                {owner.userId?.name || "Unnamed Owner"}
+                              </div>
+                              <div className="text-gray-600 text-xs">
+                                {owner.userId?.email || "No email"}
+                              </div>
+                              <div className="text-gray-500 text-sm mt-1">
+                                Share:{" "}
+                                <span className="font-semibold">
+                                  {owner.sharePercentage?.toFixed(2)}%
+                                </span>
+                              </div>
+                            </div>
+                          )
+                        )
+                      ) : (
+                        <div className="text-gray-500 text-sm">
+                          No previous owners found.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-8">
+                    <h5 className="font-semibold mb-2 text-sm text-gray-700">
+                      Property Location
+                    </h5>
+                    <div className="rounded-lg overflow-hidden shadow border border-gray-200 h-44">
+                      <iframe
+                        width="100%"
+                        height="100%"
+                        frameBorder="0"
+                        style={{ border: 0 }}
+                        src={`https://www.google.com/maps?q=${encodeURIComponent(
+                          selectedProperty.propertyId.location
+                        )}&output=embed`}
+                        allowFullScreen
+                      ></iframe>
+                    </div>
+                  </div>
+
+                  <div className="mt-6">
+                    <h5 className="font-semibold mb-2 text-sm text-gray-700">
+                      View Property Details
+                    </h5>
+                    <Link
+                      to={`/property/${selectedProperty.propertyId._id}`}
+                      className="flex items-center justify-center gap-2 w-full bg-gray-100 px-4 py-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-200 transition text-sm font-medium text-gray-700"
+                    >
+                      <FaEye className="text-gray-600" />
+                      View Full Property Page
+                    </Link>
                   </div>
                 </div>
               </div>
 
+              {/* Notice */}
               <div className="mt-8 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
@@ -856,17 +1000,16 @@ export default function LuxuryPropertyMarketplace() {
                     </h4>
                     <div className="mt-2 text-sm text-yellow-700">
                       <p>
-                        Past performance is not indicative of future results.
-                        Investment in property involves risks, including but not
-                        limited to market fluctuations and potential loss of
-                        principal. Please read the full investment disclosure
-                        before purchasing shares.
+                        NFT-based real estate investments carry risks including
+                        market volatility, illiquidity, and no guaranteed
+                        returns. Please review full terms before purchasing.
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
 
+              {/* Footer */}
               <div className="mt-8 flex justify-end">
                 <button
                   onClick={() => setIsDetailsModalOpen(false)}

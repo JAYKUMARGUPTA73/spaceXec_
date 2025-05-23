@@ -26,6 +26,10 @@ import ChatButton from "./pages/Chatboxbottom";
 import SellNFTPage from "./pages/sellNft";
 import LuxuryPropertyMarketplace from "./pages/MarketPlace";
 import Footer from "./components/layout/Footer";
+import MarketPlaceCheckout1 from "./pages/marketplaceCheckout1";
+import MarketPlaceCheckoutConfirmation from "./pages/marketplaceCheckout2";
+import MarketPlaceCheckout2 from "./pages/marketplaceCheckout2";
+import ChannelPartner from "./pages/ChannelPartner";
 
 const queryClient = new QueryClient();
 
@@ -48,12 +52,15 @@ const App = () => (
         <Route path="/invest/checkout" element={<InvestStep4 />} />
           <Route path="/property/:id" element={<PropertyDetail />} />
           <Route path="/dashboard/:id" element={<Dashboard />} />
+          <Route path="/channelpartner/:id" element={<ChannelPartner />} />
           <Route path="/chatbox" element={<ChatBox/>} />
           <Route path="/sell/:id" element={<SellNFTPage />} />
           <Route path="/admindashboard" element={<AdminDashboard />} />
           <Route path="/vendordashboard" element={<VendorDashboard />} />
           <Route path="/addproperty" element={<AdminPropertyForm />} />
           <Route path="/marketplace" element={<LuxuryPropertyMarketplace />} />
+          <Route path="/marketplace/buy" element={<MarketPlaceCheckout1 />} />
+          <Route path="/marketplace/checkout" element={<MarketPlaceCheckout2 />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

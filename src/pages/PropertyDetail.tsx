@@ -394,17 +394,20 @@ const PropertyDetail = () => {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      Location
-                    </h3>
-                    <div className="mt-4 h-[300px] rounded-lg overflow-hidden bg-gray-200">
-                      <div className="h-full w-full flex items-center justify-center">
-                        <MapPin className="h-8 w-8 text-gray-400" />
-                        <span className="ml-2 text-gray-500">
-                          Map view would be displayed here
-                        </span>
-                      </div>
+                  <div className="mt-8">
+                    <h5 className="font-semibold mb-2 text-sm text-gray-700">
+                      Property Location
+                    </h5>
+                    <div className=" overflow-hidden shadow border border-gray-700 h-72">
+                      <iframe
+                        width="100%"
+                        height="100%"
+                        style={{ border: 0 }}
+                        src={`https://www.google.com/maps?q=${encodeURIComponent(
+                          propertyData.name + propertyData.location
+                        )}&output=embed`}
+                        allowFullScreen
+                      ></iframe>
                     </div>
                   </div>
                 </div>
@@ -806,7 +809,7 @@ const PropertyDetail = () => {
         </DialogContent>
       </Dialog> */}
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

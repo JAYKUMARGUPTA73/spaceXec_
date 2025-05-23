@@ -28,24 +28,66 @@ export default function Login() {
     e.preventDefault();
     setError("");
     setLoading(true);
+  
+    const baseUrl =
+    process.env.NODE_ENV === "production"
+      ? process.env.REACT_APP_BACKEND_URL
+      : "http://localhost:5000";
 
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      if (!user.emailVerified) {
-        throw new Error("Please verify your email before logging in.");
+  try {
+    const res = await fetch(`${baseUrl}/api/users/loginwithemail`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+        credentials: "include", // important if you're using cookies for auth
+      });
+  
+      const data = await res.json();
+  
+      if (!res.ok) {
+        throw new Error(data.error || "Login failed.");
       }
+  
+      // Optionally store token or user data in state/localStorage here
+      console.log("Logged in user:", data);
+      console.log(data);
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("_id", data._id);
+      localStorage.setItem("name", data.name);
+      localStorage.setItem("profile_pic", data.profile_pic);
+      localStorage.setItem("role", data.role);
+      localStorage.setItem("email", data.email);
 
-      const token = await user.getIdToken();
-      await sendUserDataToBackend(token, { email });
-
+      switch (data.role) {
+        case "admin":
+          navigate("/admindashboard", { replace: true });
+          window.location.reload();
+          break;
+        case "vendor":
+          navigate("/dashboard/vendor", { replace: true });
+          window.location.reload();
+          break;
+        case "channel-partner":
+          navigate("/dashboard/channelpartner", { replace: true });
+          window.location.reload();
+          break;
+        default:
+          navigate("/", { replace: true });
+          window.location.reload();
+          break;
+      }
+      
+  
+      // Redirect or update UI as needed
     } catch (err) {
-      setError(err.message || "Invalid email or password.");
+      setError(err.message || "Something went wrong.");
     } finally {
       setLoading(false);
     }
   };
+  
 
   // 🔹 Handle Google Login
   const signInWithGoogle = async () => {
@@ -190,6 +232,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
+            // onClick={handleSubmit}
             className="font-mono w-full py-2 px-4 border border-transparent text-sm font-medium rounded-md text-black bg-[#D4AF37] hover:text-[#D4AF37] hover:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37]"
           >
             {loading ? "Logging in..." : "Login"}

@@ -52,8 +52,8 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
           <h2 className="text-xl font-semibold text-gray-800 flex items-center">
             <FaBell className="mr-3 text-yellow-500" /> Notifications
           </h2>
-          <button 
-            onClick={closeModal} 
+          <button
+            onClick={closeModal}
             className="text-gray-600 hover:text-gray-900"
           >
             <FaTimes className="w-6 h-6" />
@@ -89,9 +89,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
 
           {readNotifications.length > 0 && (
             <div>
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                Read
-              </h3>
+              <h3 className="text-lg font-semibold text-gray-700 mb-2">Read</h3>
               {readNotifications.map((notification) => (
                 <Link
                   key={notification.notification._id}
@@ -133,7 +131,9 @@ const Navbar: React.FC = () => {
   const [username, setUsername] = useState("");
   const [profilePic, setProfilePic] = useState("");
   const [userId, setUserId] = useState("");
-  const [notifications, setNotifications] = useState<NotificationWithRead[]>([]);
+  const [notifications, setNotifications] = useState<NotificationWithRead[]>(
+    []
+  );
   const [newNotificationCount, setNewNotificationCount] = useState(0);
 
   // Fetch notifications and user data
@@ -147,13 +147,13 @@ const Navbar: React.FC = () => {
         setUserId(storedId);
         setUsername(storedName || "");
         setProfilePic(storedProfilePic || "");
-        
+
         try {
           const response = await fetch(
             `http://localhost:5000/api/users/notifications/${storedId}`
           );
           if (!response.ok) throw new Error("Failed to fetch notifications");
-          
+
           const data = await response.json();
           setNotifications(data.notifications);
           setNewNotificationCount(data.unreadCount);
@@ -169,10 +169,11 @@ const Navbar: React.FC = () => {
   // Logout handler
   const handleLogout = async () => {
     try {
-      const baseUrl = process.env.NODE_ENV === "production"
-        ? process.env.REACT_APP_BACKEND_URL
-        : "http://localhost:5000";
-      
+      const baseUrl =
+        process.env.NODE_ENV === "production"
+          ? process.env.REACT_APP_BACKEND_URL
+          : "http://localhost:5000";
+
       const response = await fetch(`${baseUrl}/api/users/logout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -195,9 +196,9 @@ const Navbar: React.FC = () => {
 
   // Render mobile menu
   const renderMobileMenu = () => (
-    <div 
+    <div
       className={`fixed inset-0 z-40 transform transition-transform duration-300 ease-in-out 
-        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} 
+        ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"} 
         bg-white w-full h-full overflow-y-auto`}
     >
       <div className="p-4 flex justify-between items-center border-b">
@@ -208,24 +209,32 @@ const Navbar: React.FC = () => {
           <FaTimes className="w-6 h-6" />
         </button>
       </div>
-      
+
       <div className="flex flex-col p-4 space-y-4">
-        <Link 
-          to="/properties" 
+        <Link
+          to="/properties"
           className="text-lg text-gray-800 hover:text-yellow-500 py-2"
           onClick={toggleMobileMenu}
         >
           Properties
         </Link>
-        <Link 
-          to="/contact" 
+        '
+        <Link
+          to="/marketplace/buy"
+          className="text-lg text-gray-800 hover:text-yellow-500 py-2"
+          onClick={toggleMobileMenu}
+        >
+          Marketplace
+        </Link>
+        <Link
+          to="/contact"
           className="text-lg text-gray-800 hover:text-yellow-500 py-2"
           onClick={toggleMobileMenu}
         >
           Contact Us
         </Link>
-        <Link 
-          to="/about" 
+        <Link
+          to="/about"
           className="text-lg text-gray-800 hover:text-yellow-500 py-2"
           onClick={toggleMobileMenu}
         >
@@ -237,13 +246,15 @@ const Navbar: React.FC = () => {
 
   // Render profile dropdown
   const renderProfileMenu = () => (
-    <div className={`absolute z-50 right-0 top-full w-64 bg-white shadow-lg rounded-lg mt-2 overflow-hidden 
-      ${isProfileMenuOpen ? 'block' : 'hidden'}`}>
+    <div
+      className={`absolute z-50 right-0 top-full w-64 bg-white shadow-lg rounded-lg mt-2 overflow-hidden 
+      ${isProfileMenuOpen ? "block" : "hidden"}`}
+    >
       <div className="p-4 border-b flex items-center">
-        <img 
-          src={profilePic} 
-          alt="Profile" 
-          className="w-12 h-12 rounded-full mr-3 object-cover" 
+        <img
+          src={profilePic}
+          alt="Profile"
+          className="w-12 h-12 rounded-full mr-3 object-cover"
         />
         <div>
           <p className="font-semibold text-gray-800">{username}</p>
@@ -251,21 +262,21 @@ const Navbar: React.FC = () => {
         </div>
       </div>
       <div className="py-1">
-        <Link 
-          to={`/dashboard/${userId}`} 
+        <Link
+          to={`/dashboard/${userId}`}
           className="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-100"
           onClick={() => setIsProfileMenuOpen(false)}
         >
           <FaUser className="mr-3" /> Dashboard
         </Link>
-        <Link 
-          to="/settings" 
+        <Link
+          to="/settings"
           className="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-100"
           onClick={() => setIsProfileMenuOpen(false)}
         >
           <FaCog className="mr-3" /> Settings
         </Link>
-        <button 
+        <button
           onClick={handleLogout}
           className="flex items-center w-full px-4 py-2 text-red-600 hover:bg-gray-100 text-left"
         >
@@ -285,21 +296,38 @@ const Navbar: React.FC = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-6">
-          <Link to="/properties" className="text-gray-800 hover:text-yellow-500">Properties</Link>
-          <Link to="/contact" className="text-gray-800 hover:text-yellow-500">Contact Us</Link>
-          <Link to="/about" className="text-gray-800 hover:text-yellow-500">About Us</Link>
+          <Link
+            to="/properties"
+            className="text-gray-800 hover:text-yellow-500"
+          >
+            Properties
+          </Link>
+          <Link
+            to="/marketplace"
+            className="text-gray-800 hover:text-yellow-500"
+          >
+            Marketplace
+          </Link>
+          <Link to="/contact" className="text-gray-800 hover:text-yellow-500">
+            Contact Us
+          </Link>
+          <Link to="/about" className="text-gray-800 hover:text-yellow-500">
+            About Us
+          </Link>
         </div>
 
         {/* Mobile Menu Toggle */}
         <div className="md:hidden flex items-center">
-          <button 
-            onClick={() => setIsNotificationModalOpen(true)} 
+          <button
+            onClick={() => setIsNotificationModalOpen(true)}
             className="mr-4 relative"
           >
             <FaBell className="w-6 h-6 text-gray-600" />
             {newNotificationCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 
-                flex items-center justify-center text-xs">
+              <span
+                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 
+                flex items-center justify-center text-xs"
+              >
                 {newNotificationCount}
               </span>
             )}
@@ -312,34 +340,40 @@ const Navbar: React.FC = () => {
         {/* Desktop User Section */}
         <div className="hidden md:flex items-center">
           {!userId ? (
-            <Link 
-              to="/login" 
+            <Link
+              to="/login"
               className="bg-yellow-400 text-gray-800 px-4 py-2 rounded-md hover:bg-yellow-500"
             >
               Login
             </Link>
           ) : (
             <div className="relative">
-              <div 
+              <div
                 className="flex items-center cursor-pointer"
                 onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
               >
                 <div className="relative mr-4">
-                  <FaBell 
-                    className={`w-6 h-6 ${newNotificationCount > 0 ? 'text-yellow-500' : 'text-gray-600'}`}
+                  <FaBell
+                    className={`w-6 h-6 ${
+                      newNotificationCount > 0
+                        ? "text-yellow-500"
+                        : "text-gray-600"
+                    }`}
                     onClick={() => setIsNotificationModalOpen(true)}
                   />
                   {newNotificationCount > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 
-                      flex items-center justify-center text-xs">
+                    <span
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 
+                      flex items-center justify-center text-xs"
+                    >
                       {newNotificationCount}
                     </span>
                   )}
                 </div>
-                <img 
-                  src={profilePic} 
-                  alt="Profile" 
-                  className="w-10 h-10 rounded-full object-cover" 
+                <img
+                  src={profilePic}
+                  alt="Profile"
+                  className="w-10 h-10 rounded-full object-cover"
                 />
               </div>
               {renderProfileMenu()}
@@ -353,9 +387,9 @@ const Navbar: React.FC = () => {
 
       {/* Notification Modal */}
       {isNotificationModalOpen && (
-        <NotificationModal 
-          notifications={notifications} 
-          closeModal={() => setIsNotificationModalOpen(false)} 
+        <NotificationModal
+          notifications={notifications}
+          closeModal={() => setIsNotificationModalOpen(false)}
         />
       )}
     </nav>

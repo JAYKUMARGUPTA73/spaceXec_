@@ -1294,6 +1294,7 @@ const Dashboard = () => {
                   <CardHeader>
                     <CardTitle>Personal Information</CardTitle>
                   </CardHeader>
+
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
@@ -1321,29 +1322,30 @@ const Dashboard = () => {
 
                 <Card>
                   <CardHeader>
-                    <CardTitle>Security Settings</CardTitle>
+                    <CardTitle>Account Upgrade</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
                         <div>
-                          <p className="font-medium">Change Password</p>
+                          <p className="font-medium ">Upgrade to Vendor</p>
                           <p className="text-sm text-gray-500">
-                            Last updated 3 months ago
+                            Become a verified vendor and start adding your
+                            listings
                           </p>
                         </div>
-                        <Button variant="outline">Change</Button>
+                        <Button variant="outline" className="bg-blue-600 hover:bg-blue-400 hover:text-white text-white">Upgrade</Button>
                       </div>
                       <div className="flex justify-between items-center">
                         <div>
                           <p className="font-medium">
-                            Two-Factor Authentication
+                            Upgrade to Channel Partner
                           </p>
                           <p className="text-sm text-gray-500">
-                            Add an extra layer of security
+                            Earn commissions by referring clients to properties
                           </p>
                         </div>
-                        <Button variant="outline">Enable</Button>
+                        <Button variant="outline" className="bg-blue-600 hover:bg-blue-400 hover:text-white text-white">Upgrade</Button>
                       </div>
                     </div>
                   </CardContent>
