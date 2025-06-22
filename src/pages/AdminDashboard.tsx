@@ -341,6 +341,9 @@ const AdminDashboard = () => {
   const [properties, setProperties] = useState(properties_);
   const [vendorFilter, setVendorFilter] = useState("all");
   const [profile, setProfile] = useState("");
+  const [channelPartnerList, setChannelPartnerList] = useState([]);
+  const [channelPartnerFilter, setChannelPartnerFilter] = useState("all");
+
   const [error, setError] = useState(null);
   const [adminParams, setAdminParams] = useState({
     total_users: 0,
@@ -393,7 +396,7 @@ const AdminDashboard = () => {
       const baseUrl =
         process.env.NODE_ENV === "production"
           ? process.env.NEXT_PUBLIC_BACKEND_URL
-          : "http://51.79.146.251:5000";
+          : "http://localhost:5000";
 
       const res = await fetch(
         `${baseUrl}/api/properties/disable/${propertyId}`,
@@ -433,7 +436,7 @@ const AdminDashboard = () => {
       const baseUrl =
         process.env.NODE_ENV === "production"
           ? process.env.NEXT_PUBLIC_BACKEND_URL
-          : "http://51.79.146.251:5000";
+          : "http://localhost:5000";
 
       const res = await fetch(
         `${baseUrl}/api/properties/delete/${propertyId}`,
@@ -447,7 +450,7 @@ const AdminDashboard = () => {
         }
       );
       const data = await res.json(); // <--- Important: read the JSON body
-      console.log(data)
+      console.log(data);
       if (res.ok) {
         toast.success(data.message || "Property approved successfully!");
       } else {
@@ -474,7 +477,7 @@ const AdminDashboard = () => {
       const baseUrl =
         process.env.NODE_ENV === "production"
           ? process.env.NEXT_PUBLIC_BACKEND_URL
-          : "http://51.79.146.251:5000";
+          : "http://localhost:5000";
 
       const res = await fetch(
         `${baseUrl}/api/properties/approve/${propertyId}`,
@@ -513,7 +516,7 @@ const AdminDashboard = () => {
         const baseUrl =
           process.env.NODE_ENV === "production"
             ? process.env.NEXT_PUBLIC_BACKEND_URL
-            : "http://51.79.146.251:5000";
+            : "http://localhost:5000";
 
         const response = await fetch(`${baseUrl}/api/users/admindashboard`, {
           method: "POST",
@@ -557,7 +560,7 @@ const AdminDashboard = () => {
       const baseUrl =
         process.env.NODE_ENV === "production"
           ? process.env.NEXT_PUBLIC_BACKEND_URL
-          : "http://51.79.146.251:5000";
+          : "http://localhost:5000";
 
       const response = await fetch(
         `${baseUrl}/api/users/admindashboard/usersdata`,
@@ -585,7 +588,7 @@ const AdminDashboard = () => {
       const baseUrl =
         process.env.NODE_ENV === "production"
           ? process.env.NEXT_PUBLIC_BACKEND_URL
-          : "http://51.79.146.251:5000";
+          : "http://localhost:5000";
 
       const response = await fetch(`${baseUrl}/api/properties/all`, {
         method: "GET",
@@ -610,7 +613,7 @@ const AdminDashboard = () => {
       const baseUrl =
         process.env.NODE_ENV === "production"
           ? process.env.NEXT_PUBLIC_BACKEND_URL
-          : "http://51.79.146.251:5000";
+          : "http://localhost:5000";
 
       const response = await fetch(
         `${baseUrl}/api/users/admindashboard/vendorsdata`,
@@ -632,6 +635,68 @@ const AdminDashboard = () => {
       console.error("Failed to fetch dashboard data:", err);
     }
   };
+
+  const channelPartnerFilterFromUser = async () => {
+    try {
+      const baseUrl =
+        process.env.NODE_ENV === "production"
+          ? process.env.NEXT_PUBLIC_BACKEND_URL
+          : "http://localhost:5000";
+
+      const response = await fetch(
+        `${baseUrl}/api/users/getallchannelpartner`,
+        {
+          method: "POST",
+        }
+      );
+
+      const data = await response.json();
+
+      console.log("data");
+      console.log(data);
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
+      }
+
+      setChannelPartnerList(data.partners); // Ensure setChannelPartnerList is defined in your component
+      console.log(data);
+    } catch (err) {
+      setError(err.message); // Assuming you're using a shared error state
+      console.error("Failed to fetch channel partner data:", err);
+    }
+  };
+
+  const upgradeUserToChannelPartner = async (userId) => {
+    try {
+      const baseUrl =
+        process.env.NODE_ENV === "production"
+          ? process.env.NEXT_PUBLIC_BACKEND_URL
+          : "http://localhost:5000";
+  
+      const response = await fetch(`${baseUrl}/api/users/upgrade-user`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }),
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to upgrade user.");
+      }
+  
+      console.log("User upgraded to channel partner:", data);
+      alert("User successfully upgraded to channel partner!");
+      // Optionally refresh the list or update UI state
+    } catch (error) {
+      console.error("Error upgrading user:", error.message);
+      alert(`Error: ${error.message}`);
+    }
+  };
+  
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -684,6 +749,13 @@ const AdminDashboard = () => {
       ? vendorList
       : vendorList.filter((vendor) => vendor.status === vendorFilter);
 
+  const filteredChannelPartners =
+    channelPartnerFilter === "all"
+      ? channelPartnerList
+      : channelPartnerList.filter(
+          (partner) => partner.status === channelPartnerFilter
+        );
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
@@ -735,6 +807,19 @@ const AdminDashboard = () => {
               <Briefcase className="mr-2 h-4 w-4" />
               Vendors
             </Button>
+
+            <Button
+              variant={activeTab === "channelpartners" ? "secondary" : "ghost"}
+              className="w-full justify-start"
+              onClick={() => {
+                setActiveTab("channelpartners");
+                channelPartnerFilterFromUser();
+              }}
+            >
+              <Briefcase className="mr-2 h-4 w-4" />
+              Channelpartners
+            </Button>
+
             <Button
               variant={activeTab === "users" ? "secondary" : "ghost"}
               className="w-full justify-start"
@@ -1101,16 +1186,15 @@ const AdminDashboard = () => {
                         <div className="absolute bottom-0 right-24 w-1/2 ">
                           <div className="bg-gray-800 rounded-3xl p-5">
                             {/* <p className="text-center pb-1 text-white font-sans">Support Desk</p> */}
-                          <div
-                            className="absolute top-2 right-4 cursor-pointer text-red-500 font-bold  text-xl"
-                            onClick={() => setSelectedTicketId(null)}
-                          >
-                            ✕
-                          </div>
+                            <div
+                              className="absolute top-2 right-4 cursor-pointer text-red-500 font-bold  text-xl"
+                              onClick={() => setSelectedTicketId(null)}
+                            >
+                              ✕
+                            </div>
 
-                          <ChatBox ticketId={selectedTicketId} />
+                            <ChatBox ticketId={selectedTicketId} />
                           </div>
-          
                         </div>
                       )}
 
@@ -1502,6 +1586,154 @@ const AdminDashboard = () => {
                 <div className="text-sm text-gray-500">
                   Showing {filteredVendors.length} of {vendorList.length}{" "}
                   vendors
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button variant="outline" size="sm" disabled>
+                    Previous
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    Next
+                  </Button>
+                </div>
+              </CardFooter>
+            </Card>
+          </div>
+        )}
+
+        {/* channelpartner tab */}
+        {activeTab === "channelpartners" && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h1 className="text-xl font-bold">Channel Partner Management</h1>
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setChannelPartnerFilter("all")}
+                    className={channelPartnerFilter === "all" ? "bg-muted" : ""}
+                  >
+                    All
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setChannelPartnerFilter("approved")}
+                    className={
+                      channelPartnerFilter === "approved" ? "bg-muted" : ""
+                    }
+                  >
+                    Approved
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setChannelPartnerFilter("pending")}
+                    className={
+                      channelPartnerFilter === "pending" ? "bg-muted" : ""
+                    }
+                  >
+                    Pending
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setChannelPartnerFilter("rejected")}
+                    className={
+                      channelPartnerFilter === "rejected" ? "bg-muted" : ""
+                    }
+                  >
+                    Rejected
+                  </Button>
+                </div>
+                <Input
+                  placeholder="Search channel partners..."
+                  className="max-w-xs"
+                />
+              </div>
+            </div>
+
+            <Card>
+              <CardContent className="p-0">
+                <div className="relative overflow-x-auto">
+                  <table className="w-full text-sm text-left">
+                    <thead className="text-xs uppercase bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3">ID</th>
+                        <th className="px-6 py-3">Name</th>
+                        <th className="px-6 py-3">Email</th>
+                        <th className="px-6 py-3">Location</th>
+                        <th className="px-6 py-3">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredChannelPartners.map((partner, index) => (
+                        <tr
+                          key={partner.id}
+                          className="bg-white border-b hover:bg-gray-50"
+                        >
+                          <td className="px-6 py-4 font-medium">{index + 1}</td>
+                          <td className="px-6 py-4">{partner.name}</td>
+                          <td className="px-6 py-4">{partner.email}</td>
+                          <td className="px-6 py-4">{partner.location}</td>
+                          <td className="px-6 py-4">
+                            <span className={`px-2 py-1 rounded-full text-xs`}>
+                              {!partner.status ?
+                                "pending":"approved"}
+                            
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center space-x-2">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => {
+                                  const confirmed = window.confirm(
+                                    "Are you sure you want to upgrade this user to a channel partner?"
+                                  );
+                                  if (confirmed) {
+                                    // call your upgrade function here
+                                    upgradeUserToChannelPartner(partner.id) // replace with your actual function
+                                  }
+                                }}
+                              >
+                                <FaCheck
+                                  className="h-4 w-4 text-green-500 cursor-pointer"
+                                  
+                                />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              {partner.status === "pending" && (
+                                <>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 text-green-500"
+                                  >
+                                    <Check className="h-4 w-4" />
+                                  </Button>
+                                </>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+              <CardFooter className="flex justify-between border-t px-6 py-3">
+                <div className="text-sm text-gray-500">
+                  Showing {filteredChannelPartners.length} of{" "}
+                  {channelPartnerList.length} partners
                 </div>
                 <div className="flex items-center space-x-2">
                   <Button variant="outline" size="sm" disabled>

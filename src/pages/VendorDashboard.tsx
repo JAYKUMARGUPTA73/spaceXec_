@@ -437,7 +437,7 @@ const VendorDashboard = () => {
         const baseUrl =
           process.env.NODE_ENV === "production"
             ? process.env.NEXT_PUBLIC_BACKEND_URL
-            : "http://51.79.146.251:5000";
+            : "http://localhost:5000";
 
         const response = await fetch(`${baseUrl}/api/users/vendordashboard/${vendorId}`, {
           method: "POST",
@@ -488,7 +488,7 @@ const VendorDashboard = () => {
       const baseUrl =
         process.env.NODE_ENV === "production"
           ? process.env.NEXT_PUBLIC_BACKEND_URL
-          : "http://51.79.146.251:5000";
+          : "http://localhost:5000";
 
       const response = await fetch(
         `${baseUrl}/api/users/admindashboard/usersdata`,
@@ -516,7 +516,7 @@ const VendorDashboard = () => {
       const baseUrl =
         process.env.NODE_ENV === "production"
           ? process.env.NEXT_PUBLIC_BACKEND_URL
-          : "http://51.79.146.251:5000";
+          : "http://localhost:5000";
 
       const response = await fetch(
         `${baseUrl}/api/users/admindashboard/vendorsdata`,
@@ -596,7 +596,7 @@ const VendorDashboard = () => {
       <aside className="w-64 bg-white shadow-sm">
         <div className="p-6 border-b">
           <h2 className="text-xl font-semibold text-primary">
-            Welcome Admin !!
+            Welcome to Vendor Dashboard !!
           </h2>
         </div>
         <nav className="p-4">

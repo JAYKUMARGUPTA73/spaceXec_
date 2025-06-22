@@ -32,7 +32,7 @@ export default function Login() {
     const baseUrl =
     process.env.NODE_ENV === "production"
       ? process.env.REACT_APP_BACKEND_URL
-      : "http://51.79.146.251:5000";
+      : "http://localhost:5000";
 
   try {
     const res = await fetch(`${baseUrl}/api/users/loginwithemail`, {
@@ -59,14 +59,15 @@ export default function Login() {
       localStorage.setItem("profile_pic", data.profile_pic);
       localStorage.setItem("role", data.role);
       localStorage.setItem("email", data.email);
-
+      console.log("data")
+      console.log(data)
       switch (data.role) {
         case "admin":
           navigate("/admindashboard", { replace: true });
           window.location.reload();
           break;
         case "vendor":
-          navigate("/dashboard/vendor", { replace: true });
+          navigate("/vendordashboard", { replace: true });
           window.location.reload();
           break;
         case "channel-partner":
@@ -121,7 +122,7 @@ export default function Login() {
     const baseUrl =
       process.env.NODE_ENV === "production"
         ? process.env.REACT_APP_BACKEND_URL
-        : "http://51.79.146.251:5000";
+        : "http://localhost:5000";
 
     try {
       const res = await fetch(`${baseUrl}/api/users/login`, {
@@ -154,7 +155,7 @@ export default function Login() {
           window.location.reload();
           break;
         case "vendor":
-          navigate("/dashboard/vendor", { replace: true });
+          navigate("/vendordashboard", { replace: true });
           window.location.reload();
           break;
         case "channel-partner":

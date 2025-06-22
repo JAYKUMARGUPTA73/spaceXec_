@@ -127,10 +127,12 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
 const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isMoreMenuOpen, setIsMoreMenu] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [username, setUsername] = useState("");
   const [profilePic, setProfilePic] = useState("");
   const [userId, setUserId] = useState("");
+  const [userRole, setUserRole] = useState("");
   const [notifications, setNotifications] = useState<NotificationWithRead[]>(
     []
   );
@@ -142,6 +144,7 @@ const Navbar: React.FC = () => {
       const storedId = localStorage.getItem("_id");
       const storedName = localStorage.getItem("name");
       const storedProfilePic = localStorage.getItem("profile_pic");
+      setUserRole(localStorage.getItem('role'))
 
       if (storedId) {
         setUserId(storedId);
@@ -150,7 +153,7 @@ const Navbar: React.FC = () => {
 
         try {
           const response = await fetch(
-            `http://51.79.146.251:5000/api/users/notifications/${storedId}`
+            `http://localhost:5000/api/users/notifications/${storedId}`
           );
           if (!response.ok) throw new Error("Failed to fetch notifications");
 
@@ -172,7 +175,7 @@ const Navbar: React.FC = () => {
       const baseUrl =
         process.env.NODE_ENV === "production"
           ? process.env.REACT_APP_BACKEND_URL
-          : "http://51.79.146.251:5000";
+          : "http://localhost:5000";
 
       const response = await fetch(`${baseUrl}/api/users/logout`, {
         method: "POST",
@@ -218,7 +221,7 @@ const Navbar: React.FC = () => {
         >
           Properties
         </Link>
-        '
+
         <Link
           to="/marketplace/buy"
           className="text-lg text-gray-800 hover:text-yellow-500 py-2"
@@ -244,6 +247,7 @@ const Navbar: React.FC = () => {
     </div>
   );
 
+  // f
   // Render profile dropdown
   const renderProfileMenu = () => (
     <div
@@ -269,6 +273,23 @@ const Navbar: React.FC = () => {
         >
           <FaUser className="mr-3" /> Dashboard
         </Link>
+{userRole!='user' ?       <Link
+          to={`/channelpartner/${userId}`}
+          className="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-100"
+          onClick={() => setIsProfileMenuOpen(false)}
+        >
+          <FaUser className="mr-3" /> Channel Partner Dashboard
+        </Link>:""}
+
+        {userRole=='vendor' ?       <Link
+          to={`/vendordashboard`}
+          className="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-100"
+          onClick={() => setIsProfileMenuOpen(false)}
+        >
+          <FaUser className="mr-3" /> Vendor Dashboard 
+        </Link>:""}
+
+        
         <Link
           to="/settings"
           className="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-100"
@@ -282,6 +303,32 @@ const Navbar: React.FC = () => {
         >
           <FaSignOutAlt className="mr-3" /> Logout
         </button>
+      </div>
+    </div>
+  );
+
+  // Render profile dropdown
+  const renderMoreNav = () => (
+    <div
+      className={`absolute z-50 right-48 top-full w-auto h-auto bg-gray-100 shadow-lg rounded-xl mt-1 overflow-hidden 
+    `}
+    >
+      <div className="p-1 border-b">
+      <Link
+          to="/upgrade-to-vendor"
+          className="flex text-sm text-center items-center px-4 py-2 text-gray-800 rounded-xl hover:bg-gray-200"
+        >
+          Upgrade to Vendor
+        </Link>
+
+        <Link
+          to="/upgrade-to-channelpartner"
+          className="flex text-sm rounded-xl px-4 py-2 text-gray-800 hover:bg-gray-200"
+        >
+          Upgrade to Channel Partner
+        </Link>
+
+       
       </div>
     </div>
   );
@@ -314,6 +361,14 @@ const Navbar: React.FC = () => {
           <Link to="/about" className="text-gray-800 hover:text-yellow-500">
             About Us
           </Link>
+          <p
+            className="hover:cursor-pointer hover:text-yellow-500"
+            onClick={() => setIsMoreMenu(!isMoreMenuOpen)}
+          >
+            More
+          </p>
+
+          {isMoreMenuOpen && renderMoreNav()}
         </div>
 
         {/* Mobile Menu Toggle */}
@@ -348,10 +403,7 @@ const Navbar: React.FC = () => {
             </Link>
           ) : (
             <div className="relative">
-              <div
-                className="flex items-center cursor-pointer"
-                onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-              >
+              <div className="flex items-center cursor-pointer">
                 <div className="relative mr-4">
                   <FaBell
                     className={`w-6 h-6 ${
@@ -371,6 +423,7 @@ const Navbar: React.FC = () => {
                   )}
                 </div>
                 <img
+                  onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
                   src={profilePic}
                   alt="Profile"
                   className="w-10 h-10 rounded-full object-cover"

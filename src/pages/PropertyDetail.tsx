@@ -95,7 +95,7 @@ const PropertyDetail = () => {
         const baseUrl =
           process.env.NODE_ENV === "production"
             ? process.env.NEXT_PUBLIC_BACKEND_URL
-            : "http://51.79.146.251:5000";
+            : "http://localhost:5000";
 
         console.log(
           "Fetching property data from:",
@@ -654,92 +654,32 @@ const PropertyDetail = () => {
 
           {/* Right Column: Investment Card */}
           <div>
-            <div className="sticky top-24 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-              <div className="mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Investment Summary
-                </h3>
-              </div>
+  <div className="sticky top-24 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+    
+    {/* Simple descriptive text */}
+    <p className="text-sm text-gray-600 mb-4">
+      Explore this investment opportunity and take a step toward financial growth.
+    </p>
 
-              {/* Funding Progress */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">
-                    {propertyData.fundingRaised} investors
-                  </span>
-                  <span className="font-medium">
-                    {Math.round(
-                      (propertyData.fundingRaised / propertyData.fundingGoal) *
-                        100
-                    )}
-                    % funded
-                  </span>
-                </div>
-                <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-gray-100">
-                  <div
-                    className="h-full rounded-full bg-primary transition-all duration-300"
-                    style={{
-                      width: `${Math.round(
-                        (propertyData.fundingRaised /
-                          propertyData.fundingGoal) *
-                          100
-                      )}%`,
-                    }}
-                  ></div>
-                </div>
-                <div className="mt-2 flex items-center justify-between text-sm">
-                  <span className="text-gray-500">
-                    ₹{(propertyData.fundingRaised / 10000000).toFixed(1)}Cr
-                    raised
-                  </span>
-                  <span className="text-gray-500">
-                    ₹{(propertyData.fundingGoal / 10000000).toFixed(1)}Cr goal
-                  </span>
-                </div>
-              </div>
+    {/* Contact & Invest Buttons */}
+    <div className="space-y-3">
+      <Link
+        to={`/invest/${propertyData._id}`}
+        className="w-full justify-center gap-2 flex items-center px-4 py-2 text-gray-800 bg-yellow-200 hover:bg-gray-100"
+      >
+        Invest Now
+      </Link>
+      {/* <Link
+        to={`tel:${propertyData.vendorInfo.phone}`}
+        className="w-full justify-center gap-2 flex items-center px-4 py-2 text-gray-800 bg-yellow-200 hover:bg-gray-100"
+      >
+        <Phone className="h-4 w-4" />
+        Contact vendor
+      </Link> */}
+    </div>
+  </div>
+</div>
 
-              {/* <div className="space-y-4 mb-6">
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Property Value</span>
-                  <span className="font-medium">₹{propertyData.price.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Min Investment</span>
-                  <span className="font-medium">₹{propertyData.minInvestment.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Expected Yield</span>
-                  <span className="font-medium text-primary">{propertyData.yield}%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Investment Term</span>
-                  <span className="font-medium">{propertyData.offeringDetails.investmentTerm} years</span>
-                </div>
-              </div> */}
-
-              {/* Contact & Invest Buttons */}
-              <div className="space-y-3">
-                <Link
-                  to={`/invest/${propertyData._id}`}
-                  className="w-full justify-center gap-2 flex items-center px-4 py-2 text-gray-800 bg-yellow-200 hover:bg-gray-100"
-                >
-                  Invest Now
-                </Link>
-                <Link
-                  to={`tel:${propertyData.vendorInfo.phone}`}
-                  className="w-full justify-center gap-2 flex items-center px-4 py-2 text-gray-800 bg-yellow-200 hover:bg-gray-100"
-                >
-                  <Phone className="h-4 w-4" />
-                  Contact vendor
-                </Link>
-
-                <p className="text-xs text-center text-gray-500 mt-4">
-                  Closing in{" "}
-                  <span className="font-medium text-primary">12 days</span>
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 

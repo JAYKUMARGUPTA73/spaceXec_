@@ -299,7 +299,7 @@ const Dashboard = () => {
         const baseUrl =
           process.env.NODE_ENV === "production"
             ? process.env.NEXT_PUBLIC_BACKEND_URL
-            : "http://51.79.146.251:5000";
+            : "http://localhost:5000";
 
         const response = await fetch(`${baseUrl}/api/users/dashboard/${id}`);
 
@@ -1316,37 +1316,6 @@ const Dashboard = () => {
                     </div>
                     <div className="mt-6">
                       <Button>Update Profile</Button>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Account Upgrade</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className="font-medium ">Upgrade to Vendor</p>
-                          <p className="text-sm text-gray-500">
-                            Become a verified vendor and start adding your
-                            listings
-                          </p>
-                        </div>
-                        <Button variant="outline" className="bg-blue-600 hover:bg-blue-400 hover:text-white text-white">Upgrade</Button>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className="font-medium">
-                            Upgrade to Channel Partner
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            Earn commissions by referring clients to properties
-                          </p>
-                        </div>
-                        <Button variant="outline" className="bg-blue-600 hover:bg-blue-400 hover:text-white text-white">Upgrade</Button>
-                      </div>
                     </div>
                   </CardContent>
                 </Card>

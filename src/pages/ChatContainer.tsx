@@ -30,7 +30,7 @@ export default function ChatBox({ ticketId }: ChatBoxProps) {
   const baseUrl =
     process.env.NODE_ENV === "production"
       ? process.env.NEXT_PUBLIC_BACKEND_URL
-      : "http://51.79.146.251:5000";
+      : "http://localhost:5000";
 
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;

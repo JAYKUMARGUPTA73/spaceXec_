@@ -32,14 +32,14 @@ export default function Signup() {
 
     try {
       // Create user in Firebase Authentication
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+      // const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      // const user = userCredential.user;
 
       // Send Firebase Email Verification
-      await sendEmailVerification(user);
+      // await sendEmailVerification(user);
 
       // Save user in MongoDB after Firebase Verification
-      const response = await fetch("/api/users/register", {
+      const response = await fetch("http://localhost:5000/api/users/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, phone, password }), // 🔹 Included phone number

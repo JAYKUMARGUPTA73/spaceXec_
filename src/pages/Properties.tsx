@@ -1,4 +1,5 @@
 // require('dotenv').config();
+import LazyLoad from 'react-lazyload';
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Search, MapPin, SlidersHorizontal, X } from 'lucide-react';
@@ -105,7 +106,7 @@ const Properties = () => {
         const baseUrl =
           process.env.NODE_ENV === "production"
             ? process.env.NEXT_PUBLIC_BACKEND_URL
-            : "http://51.79.146.251:5000";
+            : "http://localhost:5000";
         const response = await fetch(`${baseUrl}/api/properties/all`);
         
         if (!response.ok) {
@@ -390,6 +391,7 @@ const Properties = () => {
       </div>
       
       {/* Properties grid */}
+      
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-6 flex justify-between items-center">
           <p className="text-gray-600">
@@ -413,12 +415,19 @@ const Properties = () => {
         {filteredProperties.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProperties.map((property) => (
-              <PropertyCard
-                key={property._id}
-                {...property}
-                className="custom-class"
-              />
-            ))}
+  <LazyLoad
+    key={property._id}
+    height={200}
+    offset={100}
+    once
+    placeholder={<div className="h-[300px] bg-gray-100 rounded-lg animate-pulse" />}
+  >
+    <PropertyCard
+      {...property}
+      className="custom-class"
+    />
+  </LazyLoad>
+))}
           </div>
         ) : (
           <div className="text-center py-16">
@@ -438,29 +447,8 @@ const Properties = () => {
             </Button>
           </div>
         )}
-        
-        {/* Pagination */}
-        {filteredProperties.length > 0 && (
-          <div className="mt-12 flex justify-center">
-            <nav className="flex items-center gap-1">
-              <Button variant="outline" size="sm" disabled>
-                Previous
-              </Button>
-              <Button variant="outline" size="sm" className="h-8 w-8 p-0 bg-primary text-white">
-                1
-              </Button>
-              <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                2
-              </Button>
-              <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                3
-              </Button>
-              <Button variant="outline" size="sm">
-                Next
-              </Button>
-            </nav>
-          </div>
-        )}
+
+       
       </div>
       
       {/* <Footer /> */}

@@ -27,7 +27,7 @@ interface PropertyCardProps {
   images: string[];
   status: string;
   className?: string;
-  propertyId:string
+  propertyId: string;
 }
 
 const PropertyCard = ({
@@ -61,14 +61,17 @@ const PropertyCard = ({
       const baseUrl =
         process.env.NODE_ENV === "production"
           ? process.env.NEXT_PUBLIC_BACKEND_URL
-          : "http://51.79.146.251:5000";
-      const response = await fetch(`${baseUrl}/api/properties/togglewishlist/${propertyId}`, {
-        method: "POST" ,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId }),
-      });
+          : "http://localhost:5000";
+      const response = await fetch(
+        `${baseUrl}/api/properties/togglewishlist/${propertyId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId }),
+        }
+      );
 
       const data = await response.json();
       if (!response.ok) {
@@ -85,15 +88,29 @@ const PropertyCard = ({
     }
   };
 
-  const shareProperty = (e: React.MouseEvent) => {
+  const shareProperty = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    // Share functionality placeholder
+    // Share functionality would go here
+    if (navigator.share) {
+      navigator
+        .share({
+          title: PropertyCard?.name,
+          text: `Check out this amazing property: ${PropertyCard?.name}`,
+          url: window.location.href + `/${_id}`,
+        })
+        .catch((error) => console.log("Error sharing", error));
+    } else {
+      // Fallback for browsers that don't support the Web Share API
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        alert("Property link copied to clipboard!");
+      });
+    }
   };
 
   return (
     <Link to={`/property/${_id}`} className={`group block ${className}`}>
-      <div className="overflow-hidden rounded-xl bg-white shadow-md transition-all duration-300 hover:shadow-xl">
+      <div className="overflow-hidden  w-auto bg-white shadow-md transition-all duration-300 hover:shadow-xl">
         {/* Property Image */}
         <div className="relative h-48 overflow-hidden">
           <img
@@ -178,21 +195,13 @@ const PropertyCard = ({
               <p className="text-xs text-gray-500">Available Shares</p>
             </div>
           </div>
-
-          {/* Owners Section */}
-          {owners.length > 0 && (
-            <div className="mt-4">
-              <h4 className="text-xs font-medium text-gray-500">Owners:</h4>
-              <ul className="mt-1 text-xs text-gray-600 space-y-1">
-                {owners.map((owner) => (
-                  <li key={owner.userId._id}>
-                    {owner.userId.name} ({owner.sharePercentage}%)
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
         </div>
+      <Link
+        to={`/property/${_id}`}
+        className="w-full mt-1 justify-center gap-2 flex items-center px-4 py-2 text-gray-800 bg-blue-400 hover:bg-blue-500"
+      >
+        Invest Now
+      </Link>
       </div>
     </Link>
   );

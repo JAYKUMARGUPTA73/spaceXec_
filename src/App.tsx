@@ -30,6 +30,9 @@ import MarketPlaceCheckout1 from "./pages/marketplaceCheckout1";
 import MarketPlaceCheckoutConfirmation from "./pages/marketplaceCheckout2";
 import MarketPlaceCheckout2 from "./pages/marketplaceCheckout2";
 import ChannelPartner from "./pages/ChannelPartner";
+import ForgotPassword from "./components/auth/Forgotpass";
+import ResetPassword from "./components/auth/Resetpassword";
+import BecomeChannelPartner from "./pages/upgradetoChannnelp";
 
 const queryClient = new QueryClient();
 
@@ -58,7 +61,10 @@ const App = () => (
           <Route path="/admindashboard" element={<AdminDashboard />} />
           <Route path="/vendordashboard" element={<VendorDashboard />} />
           <Route path="/addproperty" element={<AdminPropertyForm />} />
+          <Route path="/forgotpassword" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/marketplace" element={<LuxuryPropertyMarketplace />} />
+          <Route path="/upgrade-to-channelpartner" element={<BecomeChannelPartner />} />
           <Route path="/marketplace/buy" element={<MarketPlaceCheckout1 />} />
           <Route path="/marketplace/checkout" element={<MarketPlaceCheckout2 />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
