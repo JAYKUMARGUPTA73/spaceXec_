@@ -1183,17 +1183,17 @@ const AdminDashboard = () => {
                     </thead>
                     <tbody>
                       {selectedTicketId && (
-                        <div className="absolute bottom-0 right-24 w-1/2 ">
-                          <div className="bg-gray-800 rounded-3xl p-5">
+                        <div className="absolute top-0 -left-32 w-2/3 h-2/3 ">
+                          <div className="bg-gray-400 bg-opacity-0 h-full w-full p-2 rounded-lg relative">
                             {/* <p className="text-center pb-1 text-white font-sans">Support Desk</p> */}
                             <div
-                              className="absolute top-2 right-4 cursor-pointer text-red-500 font-bold  text-xl"
+                              className="absolute top-4  z-50 right-40 cursor-pointer text-red-500 font-bold  text-xl"
                               onClick={() => setSelectedTicketId(null)}
                             >
                               ✕
                             </div>
-
-                            <ChatBox ticketId={selectedTicketId} />
+                            <div></div>
+                            <ChatBox  ticketId={selectedTicketId} />
                           </div>
                         </div>
                       )}

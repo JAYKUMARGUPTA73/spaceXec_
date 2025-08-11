@@ -901,18 +901,18 @@ const Dashboard = () => {
                       <div className="mt-4 flex gap-2">
                         <Link to={`/property/${property.id}`}>
                           <Button
-                            variant="outline"
+                            variant="secondary"
                             size="sm"
-                            className="w-full border-gray-400 text-gray-900 hover:bg-gray-100"
+                            className="w-full border-gray-400 !px-3 !py-0 text-[12px] leading-tight  text-gray-900 hover:bg-gray-400 bg-blue-200"
                           >
-                            View Details
+                           See More
                           </Button>
                         </Link>
 
                         <Button
-                          variant="destructive"
+                          variant="ghost"
                           size="sm"
-                          className="w-full px-8 bg-red-500 text-white hover:bg-red-600"
+                          className="w-full px-7 bg-red-500 text-white hover:bg-red-600"
                           onClick={() =>
                             navigate(`/sell/${property.id}`, {
                               state: property,

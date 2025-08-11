@@ -1,5 +1,5 @@
 // components/NewTicketForm.tsx
-"use client";
+"use client"
 
 import { useState } from "react";
 import { toast } from "react-toastify";

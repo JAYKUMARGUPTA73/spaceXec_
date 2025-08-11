@@ -26,6 +26,8 @@ export default function ChatBox({ ticketId }: ChatBoxProps) {
   const [messages, setMessages] = useState<string[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [profileImage, setProfileImage] = useState("");
+  const [role,setRole]= useState("");
+
 
   const baseUrl =
     process.env.NODE_ENV === "production"
@@ -67,11 +69,12 @@ export default function ChatBox({ ticketId }: ChatBoxProps) {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ ticketId, message: newMessage }), // Prefix customer:
+        body: JSON.stringify({ ticketId, message: newMessage,role }), // Prefix customer:
       });
 
       if (res.ok) {
-        setMessages((prev) => [...prev, `customer: ${newMessage}`]);
+
+        setMessages((prev) => [...prev, `${role}: ${newMessage}`]);
         setNewMessage("");
       } else {
         toast.error("Failed to send message.");
@@ -84,6 +87,8 @@ export default function ChatBox({ ticketId }: ChatBoxProps) {
   useEffect(() => {
     fetchTicketChats();
     const p = localStorage.getItem("profile_pic");
+    const r = localStorage.getItem("role");
+    setRole(r || "");
     setProfileImage(p);
   }, []);
 
@@ -98,7 +103,8 @@ export default function ChatBox({ ticketId }: ChatBoxProps) {
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {messages.length > 0 ? (
           messages.map((msg, index) => {
-            const isCustomer = msg.startsWith("customer:");
+            const isCustomer = msg.startsWith("admin:");
+            console.log(msg)
             const message = msg.split(":").slice(1).join(":").trim();
 
             return (
@@ -112,7 +118,7 @@ export default function ChatBox({ ticketId }: ChatBoxProps) {
                 <div
                   key={index}
                   className={`flex ${
-                    isCustomer ? "justify-end" : "justify-start"
+                    !isCustomer ? "justify-end" : "justify-start"
                   }`}
                 >
                   <div
@@ -121,7 +127,7 @@ export default function ChatBox({ ticketId }: ChatBoxProps) {
                     }`}
                   >
                     {/* Profile Avatar */}
-                    {isCustomer ? (
+                    {!isCustomer ? (
                       <img
                         src={profileImage} // Customer profile picture
                         alt="Customer"
@@ -134,7 +140,7 @@ export default function ChatBox({ ticketId }: ChatBoxProps) {
                     {/* Message Section */}
                     <div
                       className={`max-w-xs p-3 rounded-lg ${
-                        isCustomer
+                        !isCustomer
                           ? "bg-blue-600 text-white"
                           : "bg-gray-700 text-white"
                       }`}
